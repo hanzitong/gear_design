@@ -1,3 +1,10 @@
+
+## my ignoring files
+build/
+# exception
+!build/.gitkeep
+
+############### default #################
 # Prerequisites
 *.d
 
