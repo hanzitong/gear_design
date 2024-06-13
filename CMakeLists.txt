@@ -1,0 +1,86 @@
+
+cmake_minimum_required(VERSION 3.8)
+project(gear_design)
+
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+  # add_compile_options(-Wall -Wextra -Wpedantic -v)
+endif()
+
+find_package(nlopt REQUIRED)
+include_directories(
+  include
+  # ${EIGEN3_INCLUDE_DIRS}
+  # ${Boost_INCLUDE_DIRS}
+)
+
+# add_library(smart_tether src/c_bounds.cpp src/tensions.cpp src/tether_opt.cpp)
+add_library(smart_tether src/c_bounds.cpp src/tensions.cpp src/tether_opt.cpp src/multi_tether_opt.cpp)
+
+# add_executable()
+# ament_target_dependencies()
+
+target_include_directories(smart_tether
+  PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+
+target_link_libraries(smart_tether nlopt)
+
+# install(TARGETS smart_tether
+#   ARCHIVE DESTINATION lib
+#   LIBRARY DESTINATION lib
+#   RUNTIME DESTINATION bin
+#   INCLUDES DESTINATION include
+# )
+
+install(
+  DIRECTORY include/
+  DESTINATION include
+)
+
+
+if(BUILD_TESTING)
+#   find_package(ament_cmake_gtest REQUIRED)
+
+  # ament_add_gtest(${PROJECT_NAME}_test_tensions test/test_tensions.cpp)
+  # target_link_libraries(${PROJECT_NAME}_test_tensions smart_tether)
+  # target_include_directories(${PROJECT_NAME}_test_tensions PUBLIC
+  #   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  #   $<INSTALL_INTERFACE:include>
+  # )
+
+  # ament_add_gtest(${PROJECT_NAME}_test_c_bounds test/test_c_bounds.cpp)
+  # target_link_libraries(${PROJECT_NAME}_test_c_bounds smart_tether)
+  # target_include_directories(${PROJECT_NAME}_test_c_bounds PUBLIC
+  #   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  #   $<INSTALL_INTERFACE:include>
+  # )
+
+  # ament_add_gtest(${PROJECT_NAME}_test_tether_opt test/test_tether_opt.cpp)
+  # target_link_libraries(${PROJECT_NAME}_test_tether_opt smart_tether)
+  # target_include_directories(${PROJECT_NAME}_test_tether_opt PUBLIC
+  #   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  #   $<INSTALL_INTERFACE:include>
+  # )
+
+#   ament_add_gtest(${PROJECT_NAME}_test_multi_tether_opt test/test_multi_tether_opt.cpp)
+#   target_link_libraries(${PROJECT_NAME}_test_multi_tether_opt smart_tether)
+#   target_include_directories(${PROJECT_NAME}_test_multi_tether_opt PUBLIC
+#     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+#     $<INSTALL_INTERFACE:include>
+#   )
+
+
+  # find_package(ament_lint_auto REQUIRED)
+  # the following line skips the linter which checks for copyrights
+  # comment the line when a copyright and license is added to all source files
+  # set(ament_cmake_copyright_FOUND TRUE)
+  # the following line skips cpplint (only works in a git repo)
+  # comment the line when this package is in a git repo and when
+  # a copyright and license is added to all source files
+  # set(ament_cmake_cpplint_FOUND TRUE)
+  # ament_lint_auto_find_test_dependencies()
+endif()
+
