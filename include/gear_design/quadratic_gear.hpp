@@ -1,10 +1,29 @@
 
 #include <iostream>
 #include <vector>
+#include <cmath>
+
+struct GearParam {
+    double module;
+    double diameter;
+};
+
+
+double calc_gearshape_outline_shape_quadratic(const double x, void* gearparam) {
+    // *(GearParam)gearparam.module
+    GearParam* param = static_cast<GearParam*>(gearparam);
+    double m = param -> module;
+    double d = param -> diameter;
+
+    if (m < 0 || d < 0) return m * d * x;
+    else return std::pow(x, 2.) + 10.;
+}
+
+
 
 
 // bool calc_gear_right_shape_quadratic(const std::vector<double>& input, std::vector<double> output, const int length) {
-bool calc_gear_right_shape_quadratic(const std::vector<double>& input, std::vector<double> output) {
+bool calc_gearshape_right_quadratic(const std::vector<double>& input, std::vector<double> output) {
     // defence
     if (input.size() != output.size()) {
         throw std::invalid_argument("Input and Output array size is not same.");
@@ -19,8 +38,8 @@ bool calc_gear_right_shape_quadratic(const std::vector<double>& input, std::vect
 }
 
 
-bool calc_gear_left_shape_quadratic(const std::vector<double>& input, std::vector<double>& output) {
-    calc_gear_right_shape_quadratic(input, output);
+bool calc_gearshape_left_quadratic(const std::vector<double>& input, std::vector<double>& output) {
+    calc_gearshape_right_quadratic(input, output);
     // calc axis standing for the center of its range.
     // int index = std::min(output);
     // int index = std::min(output.begin(), output.end());
@@ -35,7 +54,12 @@ bool calc_gear_left_shape_quadratic(const std::vector<double>& input, std::vecto
 }
 
 
-bool calc_gear_top_shape_circle(const std::vector<double>& input, std::vector<double>& output) {  // 3rd argument: length???
+bool calc_gearshape__top_circle(const std::vector<double>& input, std::vector<double>& output) {  // 3rd argument: length???
+    int size = input.size();
+    for (const auto& x_point : output) {
+        std::cout << x_point << std::endl;
+    }
+
 
     return true;
 }
