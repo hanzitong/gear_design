@@ -4,16 +4,16 @@
 #include <vector>
 
 #include "../include/gear_design/quadratic_gear.hpp"
-
+// #include <gear_design/quadratic_gear.hpp>
+// #include <gear_design.hpp>
 
 
 int main(const int argc, const char* argv[]) {
-    GearParam chank = {10., 20.};
+    gear_design::GearParam chank = {10., 20.};
 
-    double y = calc_gearshape_outline_shape_quadratic(0, &chank);
+    double y = gear_design::calc_gearshape_outline_quadratic(0, &chank);
 
     std::cout << y << std::endl;
-
 
 
 
