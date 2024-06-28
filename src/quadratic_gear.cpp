@@ -43,7 +43,7 @@ double calc_sig0y_quadratic(const double& x_input, void* chank) {
     double quad_b = params -> quad_b;
     double cos = std::cos(theta);
     double sin = std::sin(theta);
-    std::cout << "theta: " << theta << std::endl;
+    // std::cout << "theta: " << theta << std::endl;
 
     double cons_D = x_input * cos + radius * cos;
     double A = quad_a * sin * sin;
@@ -51,15 +51,16 @@ double calc_sig0y_quadratic(const double& x_input, void* chank) {
     double C = quad_a * cons_D * cons_D + quad_b - radius * sin - x_input * sin;
 
     if (theta < M_PI / 2. | M_PI / 2. < theta) {
-        std::cout << "theta < M_PI / 2 < theta" << std::endl;
+        // std::cout << "theta < M_PI / 2 < theta" << std::endl;
         double true_value = B * B - 4. * A * C;
-        std::cout << "A: " << A << std::endl;
-        std::cout << "true_value: " << true_value << std::endl;
+        // std::cout << "A: " << A << std::endl;
+        // std::cout << "true_value: " << true_value << std::endl;
         return (-1. * B + std::sqrt(B * B - 4. * A * C)) / (2. * A);        // return upper solution
     } else {    // theta == M_PI / 2
-        std::cout << "theta == M_PI / 2" << std::endl;
+        // std::cout << "theta == M_PI / 2" << std::endl;
         return quad_a * x_input * x_input + quad_b + radius;
     }
+
     // return (-1. * B - std::sqrt(B * B - 4. * A * C)) / (2. * A);        // return lower solution
 }
 

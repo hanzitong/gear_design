@@ -1,20 +1,17 @@
 
+
 #include <iostream>
 #include <cmath>
-#include <vector>
-
-#include "../include/gear_design/quadratic_gear.hpp"
-// #include <gear_design/quadratic_gear.hpp>
-// #include <gear_design.hpp>
+#include <gear_design/quadratic_gear.hpp>
 
 
 int main(const int argc, const char* argv[]) {
-    gear_design::GearParam chank = {10., 20.};
+    gear_design::GearParamQuadratic chank = gear_design::GearParamQuadratic(10., 34. / 180. * M_PI, 4., 12.);
 
-    double y = gear_design::calc_gearshape_outline_quadratic(0, &chank);
+    double y = gear_design::calc_sig0y_quadratic(2., &chank);
+    // double y = gear_design::calc_sig0y_quadratic(0., &chank);
 
     std::cout << y << std::endl;
-
 
 
     return 0;

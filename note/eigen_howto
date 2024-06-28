@@ -1,0 +1,30 @@
+
+
+
+
+
+// just a memo for the future implementation
+double calc_sig1y_quadratic(const double sig1x, void* gearparam) {    // sig1: sigma 1 coordinate
+    GearParam* param = static_cast<GearParam*>(gearparam);
+    double sig1_rcutter = param -> module;          // 0 < sig1_rcutter < sig1_work
+    double theta_cutter = param -> diameter / 2.;   // 0 < theta_cutter < 2 * PI
+
+    double sig1_y = -1. * std::pow(x, 2.) + 10.;
+    Eigen::Vector3d sig1_rcutter;
+    sig1_rcutter << sig1x,
+                    sig1y,
+                    1.;
+    std::cout << sig1_rcutter << std::endl;
+
+    Eigen::Matrix3d sig0_T_sig1;
+    sig0_T_sig1 = std::cos(theta_cutter), std::sin(theta_cutter), 
+
+
+    return -1;
+}
+
+
+
+
+
+
