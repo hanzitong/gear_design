@@ -8,49 +8,49 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 
-# find_package(REQUIRED)
+find_package(Eigen3 REQUIRED)
 
-include_directories(
-  include
-  # ${EIGEN3_INCLUDE_DIRS}
-  # ${Boost_INCLUDE_DIRS}
-)
-
-add_library(gear_design_lib
-  # src/involute_gear.cpp
-  src/quadratic_gear.cpp
-)
-
-add_executable(gear_design_test test/main.cpp)
-target_link_libraries(gear_design_test gear_design_lib)
-
-target_include_directories(gear_design_lib
-  PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
-)
-
-target_include_directories(gear_design_test
-  PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
-)
-
-
-install(
-  DIRECTORY include/
-  DESTINATION include
-)
-
-install(TARGETS gear_design_lib
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-)
-
-# install(TARGETS gear_design_test
-#   RUNTIME DESTINATION bin
+# include_directories(
+#   include
+#   # ${EIGEN3_INCLUDE_DIRS}
+#   # ${Boost_INCLUDE_DIRS}
 # )
 
+add_executable(gear_design example/main.cpp src/quadratic_gear.cpp)
+target_include_directories(gear_design PRIVATE include)
+target_link_libraries(gear_design PRIVATE nlopt)
 
+add_executable(test_quadratic_gear test/test_quadratic_gear.cpp src/quadratic_gear.cpp)
+target_include_directories(test_quadratic_gear PRIVATE include)
+target_link_libraries(test_quadratic_gear PRIVATE Eigen3::Eigen gtest pthread)
+
+
+# target_include_directories(gear_design
+#   PUBLIC
+#   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+#   $<INSTALL_INTERFACE:include>
+# )
+
+# ==============
+
+# add_library(gear_design_lib
+#   src/quadratic_gear.cpp
+#   # src/involute_gear.cpp
+# )
+# add_executable(gear_design_test test/main.cpp)
+# target_link_libraries(gear_design_test gear_design_lib)
+
+# target_include_directories(gear_design_lib
+#   PUBLIC
+#   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+#   $<INSTALL_INTERFACE:include>
+# )
+
+# target_include_directories(gear_design_test
+#   PUBLIC
+#   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+#   $<INSTALL_INTERFACE:include>
+# )
+
+# ==============
 
