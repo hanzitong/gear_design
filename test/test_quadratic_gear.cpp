@@ -31,9 +31,16 @@ TEST(SolutionTest, OnFunction) {
     gear_design::GearParamQuadratic chank(r, theta, a, b);
     double y_output = gear_design::calc_sig0y_quadratic(x_input, &chank);
 
-    Eigen::Matrix3d sig0_T_sig1;
-    // sig0_T_sig1 = std::cos(theta_cutter), std::sin(theta_cutter), 
-    // ASSERT_NEAR();
+    /* calc sig1_p from sig0_p*/
+    double sin = std::sin(theta);
+    double cos = std::cos(theta);
+    Eigen::Matrix3d sig1_T_sig0;
+    sig1_T_sig0 << cos,     - 1. * sin,    r * cos, 
+                   sin,     cos,           r * sin,
+                   0.d,     0.d,           1.d;
+
+    /* test if sig1_p is on function or not */
+    // ASSERT_NEAR(y_output, y_calculated_here);
 
 }
 
