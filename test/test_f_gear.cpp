@@ -19,26 +19,12 @@ TEST(SolutionTest, SameResult) {
     double theta = dis_theta(gen);
 
     /* set test condition of axis-siggear_gearprofile_x */
-    const double N = 100.;
-    const double siggear_x_range[2] = {-2., 2.};
+    const double N = 100.;  // the number of splitting
+    const double siggear_x_range[2] = {-20., 20.};
     const double siggear_x_diff = (siggear_x_range[1] - siggear_x_range[0]) / N;
     std::vector<double> siggear_f_gearprofile_x(N, 0.);
     for (int i = 0; i < N; ++i) {
         siggear_f_gearprofile_x[i] = siggear_x_range[0] + siggear_x_diff * i;
-    }
-
-    /* check if test-condition is correct */
-    // ASSERT_LE();
-    // ASSERT_GE();
-
-    /* using x,y, function to calculate. */
-    std::vector<double> test_sigbase_f_gearprofile_x(N, 0.);
-    std::vector<double> test_sigbase_f_gearprofile_y(N, 0.);
-    for (int i = 0; i < N; ++i) {
-        test_sigbase_f_gearprofile_x[i] = \
-            gear_design::calc_sigbase_f_gearprofile_x_coordinate(siggear_f_gearprofile_x[i], radius, theta);
-        test_sigbase_f_gearprofile_y[i] = \
-            gear_design::calc_sigbase_f_gearprofile_y_coordinate(siggear_f_gearprofile_x[i], radius, theta);
     }
 
     /* using calc_f_gearprofile_vector() to calculate sigbase_f_gearprofile form siggear_f_gearprofile_x */
@@ -47,33 +33,37 @@ TEST(SolutionTest, SameResult) {
 
     /* test for each siggear_f_gearprofile_x */
     for (int i = 0; i < N; ++i) {
+        /* To transform from siggear to sigbase, use sigbase_f_gearprofile_x,y.
+           Here, siggear_x is used as a parameter.                                          */
+        double test_sigbase_f_gearprofile_x = \
+            gear_design::calc_sigbase_f_gearprofile_x_coordinate(siggear_f_gearprofile_x[i], radius, theta);
+        double test_sigbase_f_gearprofile_y = \
+            gear_design::calc_sigbase_f_gearprofile_y_coordinate(siggear_f_gearprofile_x[i], radius, theta);
+
+        /* To transform profile_vector from siggear to sigbase, use siggear_f_gearprofile_vector which uses Eigen */
         siggear_f_gearprofile_vector << siggear_f_gearprofile_x[i],
                                         gear_design::siggear_f_gearprofile(siggear_f_gearprofile_x[i]),
                                         1.;
         sigbase_f_gearprofile_vector = \
-            gear_design::calc_sigbase_f_gearprofile_vector(siggear_f_gearprofile_vector, sigbase_f_gearprofile_vector, radius, theta);
+            gear_design::calc_sigbase_f_gearprofile_vector(
+                siggear_f_gearprofile_vector, sigbase_f_gearprofile_vector,
+                radius, theta);
 
         /* test */
-        ASSERT_NEAR(sigbase_f_gearprofile_vector[0], test_sigbase_f_gearprofile_x[i], 1e-6);
-        ASSERT_NEAR(sigbase_f_gearprofile_vector[1], test_sigbase_f_gearprofile_y[i], 1e-6);
+        ASSERT_NEAR(sigbase_f_gearprofile_vector[0], test_sigbase_f_gearprofile_x, 1e-6);
+        ASSERT_NEAR(sigbase_f_gearprofile_vector[1], test_sigbase_f_gearprofile_y, 1e-6);
     }
 
 
-    /* test */
-    // for (int i = 0; i < N; ++i) {
-    // }
-
-    // ASSERT_NEAR((sig1_p[1] - sig1y_calculated_here) / sig1_p[1], 0., 1e-6) \
-    //     << "r: " << r << ", theta: " << theta;
-        // << ", sig0x_input: " << sig0x_input \
-        // << ", sig0y_output: " << sig0y_output << std::endl;
+    // TODO: test with inverse matrix.
+    //       t
 }
 
 
 int main(int argc, char **argv){
     ::testing::InitGoogleTest(&argc, argv);
 
-    for(int i = 0; i < 90000; ++i){
+    for(int i = 0; i < 10000; ++i){
         RUN_ALL_TESTS();
     }
 

@@ -26,7 +26,7 @@ double siggear_f_gearprofile(const double& x) {
      --/-----.-----.-----.-----\----------> siggear_x_coordinate
       /      .    0|     .      \
      /       .     |     .       \
-       flank .  tooth    . right
+       left  .  tooth    . right
        flank .   tip     . flank
             x=-1        x=1
     */    
@@ -112,9 +112,9 @@ double calc_sigbase_f_gearprofile_y_coordinate(
 }
 
 
-/* only transform */
+/* actually, it conducts only transformation */
 Eigen::Vector3d calc_sigbase_f_gearprofile_vector(
-    const Eigen::Vector3d& siggear_gearprofile,     // input
+    const Eigen::Vector3d& siggear_gearprofile,     // input (siggear_x, siggear_y, 1)
     Eigen::Vector3d& sigbase_gearprofile,           // output 
     const double& radius,               // cutter radius
     const double& theta) {              // the angle between axis-siggear_y_coordinate relative to axis-sigbase_x_coordinate
@@ -149,8 +149,10 @@ Eigen::Vector3d calc_sigbase_f_gearprofile_vector(
                         (0,             0,              1)   (0    0   1)
     */
 
-    /* phi: the angle between axis-siggear_y_coordinate relative to axis-sigbase_y_coordinate,
-            with the axis-sigbase_y_coordinate as the reference.                               */
+    /* 
+    phi: the angle between axis-siggear_y_coordinate relative to axis-sigbase_y_coordinate,
+            with the axis-sigbase_y_coordinate as the reference.                               
+    */
     const double phi = theta - M_PI / 2.;
 
     /* cache */
@@ -164,7 +166,7 @@ Eigen::Vector3d calc_sigbase_f_gearprofile_vector(
     
     sigbase_gearprofile = sigbase_T_siggear * siggear_gearprofile;
 
-    /* memo: inverse matrix of sigbase_T_siggear*/
+    /* memo: inverse matrix of sigbase_T_siggear */
     // Eigen::Matrix3d siggear_T_sigbase = Eigen::Matrix3d::Zero();
     //     siggear_T_sigbase << cos,       sin,        0.,
     //                          -1. * sin, cos,        -1. * radius,

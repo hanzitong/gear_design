@@ -10,19 +10,23 @@ endif()
 
 find_package(Eigen3 REQUIRED)
 
-# include_directories(
-#   include
-#   # ${EIGEN3_INCLUDE_DIRS}
-#   # ${Boost_INCLUDE_DIRS}
-# )
+include_directories(
+  include
+  ${EIGEN3_INCLUDE_DIRS}
+  ${Boost_INCLUDE_DIRS}
+)
 
-add_executable(gear_design example/main.cpp src/quadratic_gear.cpp)
-target_include_directories(gear_design PRIVATE include)
-target_link_libraries(gear_design PRIVATE nlopt)
+add_executable(f_gear example/main.cpp src/f_gear.cpp)
+target_include_directories(f_gear PRIVATE include)
+# target_link_libraries(f_gear PRIVATE nlopt)
 
-add_executable(test_quadratic_gear test/test_quadratic_gear.cpp src/quadratic_gear.cpp)
-target_include_directories(test_quadratic_gear PRIVATE include)
-target_link_libraries(test_quadratic_gear PRIVATE Eigen3::Eigen gtest pthread)
+# add_executable(quad_gear example/main.cpp src/quadratic_gear.cpp)
+# target_include_directories(quad_gear PRIVATE include)
+# target_link_libraries(quad_gear PRIVATE nlopt)
+
+# add_executable(test_quadratic_gear test/test_quadratic_gear.cpp src/quadratic_gear.cpp)
+# target_include_directories(test_quadratic_gear PRIVATE include)
+# target_link_libraries(test_quadratic_gear PRIVATE Eigen3::Eigen gtest pthread)
 
 
 # target_include_directories(gear_design
