@@ -7,6 +7,9 @@
 #include <cmath>
 
 #include "../../include/gear_design/f_gear.hpp"
+#include "../../include/gear_design/sigbase_f_gear.hpp"
+
+
 
 
 int main() {
