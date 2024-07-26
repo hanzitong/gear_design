@@ -11,7 +11,6 @@
 
 
 
-
 int main() {
     const int N = 100;
     const double radius = 10.;
