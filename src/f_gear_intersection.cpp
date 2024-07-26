@@ -33,7 +33,8 @@ double obj_gearprofile1_gearprofile2_intersection_nlopt(
     double cos = std::cos(theta);
     double sin = std::sin(theta);
     // double y_base = gear_design::siggear_f_gearprofile(x_gear); // is y_base correct??????????
-    double x_base = x_base_input[0];
+    double x_base = x_base_input[0];     // for being used in nlopt object
+    // double x_base = x_base_input[0];     // for being used in gnuplot 
     double y_base = gear_design::siggear_f_gearprofile(x_base);     // temporary change. not confident about whether its output is correct or not.
     double res = x_base * (cos + sin) - y_base * (sin + cos) - radius * sin + radius * cos - x_base - y_base;
 
