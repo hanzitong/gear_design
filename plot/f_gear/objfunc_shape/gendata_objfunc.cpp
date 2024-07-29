@@ -1,6 +1,5 @@
 
 
-
 #include <iostream>
 #include <fstream>
 #include <cmath>
@@ -11,40 +10,57 @@
 
 
 int main() {
+    std::cout << "here!!!!!!!!!!!!" << std::endl;
     /* basic declaration */
-    std::vector<double> x_data(10000, 0.);
-    std::vector<double> y_data(10000, 0.);
+    int N = 1000;
+    std::vector<double> y_base_record(N, 0.);
+    std::vector<double> x_gear_record(N, 0.);
+    std::cout << "here!!!!!!!!!!!!" << std::endl;
+    std::vector<std::pair<double, double>> g_record(N, {0., 0.});
+    // double g_record[2000][2000];
+    // for (int i = 0; i < 2000; ++i) {
+    //     for (int j = 0; j < 2000; ++j) {
+    //         g_record[i][j] = 0.;
+    //     }
+    // }
     std::vector<double> dammy(10, 0.);
 
+    std::cout << "here!!!!!!!!!!!!" << std::endl;
+
     /* prepare the plot range of x-axis */
-    double radius = 14.;
+    double radius = 0.2;        // [m]
     double theta = 100. / 180 * M_PI;
-    double range_start = -10.;
-    double range_delta = 0.3;   // maybe need to avoid x=0
+    double y_base_range_start = 10.;
+    double x_gear_range_start = 10.;
+    double range_delta = 0.5;   // maybe need to avoid x=0
 
     /* prepare parameters which objective function needs */
-    gear_design::GearParamFgear params(radius, theta, 0., 0.);
-    std::vector<double> x_ini = {0., 0.};
+    gear_design::GearParamFgear params(radius, theta, 2.);
+    std::vector<double> initial_val = {0., 0.};   // y_base, x_gear
+    
+    /* set variable range y_base & x_gear */
+    for (int i = 0; i < N; ++i) y_base_record[i] = y_base_range_start + range_delta * i;   // y_base
+    for (int j = 0; j < N; ++j) x_gear_record[j] = x_gear_range_start + range_delta * j;   // x_gear
 
-    /* set plot range x and calculate y (both are on sigbase) */
-    for (int i = 0; i < x_data.size(); ++i) {
-        x_ini[0] = range_start + range_delta * i;
-        x_data[i] = x_ini[0];
-        y_data[i] = \
-            gear_design::obj_gearprofile1_gearprofile2_intersection_nlopt(x_ini, dammy, (void*)&params);
+    /* calculate y_base for each point */
+    for (int i = 0; i < N; ++i) {
+        initial_val[0] = y_base_record[i];
+        for (int j = 0; j < N; ++j) {
+            initial_val[1] = x_gear_record[j];
+            // g_record[i][j] = \
+            //     gear_design::obj_gearprofile1_gearprofile2_intersection_nlopt(initial_val, dammy, (void*)&params);
+            g_record[i][j] = 1.;
+        }
     }
 
-    // for (int i = 0; i < y_data.size(); ++i) {
-    //     y_data[i] = gear_design::obj_gearprofile1_gearprofile2_intersection_nlopt(x_data, dammy, (void*)&params);
-    // }
-
-    /* put x,y-data into a record file */
+    /* put x,y-record into a record file */
     std::ofstream file;
     file.open("data/data_objfunc.dat");
-    file << "#x y\n";
-    for (int i = 0; i < 100; ++i) {
-        file << x_data[i] << ' ' << y_data[i] << "\n";
-        // if (i % 10 == 0) file << "\n";
+    file << "# y_base x_gear g(y_base, x_gear)\n";
+    for (int i = 0; i < N; ++i) {
+        for (int j = 0; j < N; ++j) {
+            file << y_base_record[i] << ' ' << x_gear_record[j] << ' ' << g_record[i][j] << "\n";
+        }
     }
     file.close();
 

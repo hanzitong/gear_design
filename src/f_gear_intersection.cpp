@@ -23,23 +23,25 @@ namespace gear_design{
 
 // function name correct ???????????????
 double obj_gearprofile1_gearprofile2_intersection_nlopt(
-                                                        const std::vector<double>& x_base_input,
+                                                        const std::vector<double>& input_vec,
                                                         std::vector<double>& grad, 
                                                         void* f_data) {
     gear_design::GearParamFgear* params = static_cast<gear_design::GearParamFgear*>(f_data);
+
+    /* rename and cache */
     double radius = params -> radius;
     double theta = params -> theta;
-
     double cos = std::cos(theta);
     double sin = std::sin(theta);
-    // double y_base = gear_design::siggear_f_gearprofile(x_gear); // is y_base correct??????????
-    double x_base = x_base_input[0];     // for being used in nlopt object
-    // double x_base = x_base_input[0];     // for being used in gnuplot 
-    double y_base = gear_design::siggear_f_gearprofile(x_base);     // temporary change. not confident about whether its output is correct or not.
-    double res = x_base * (cos + sin) - y_base * (sin + cos) - radius * sin + radius * cos - x_base - y_base;
+    double x_base = params -> x_base;      // input 
+    double y_base = input_vec[0];        // y_base is 1st-variable
+    double x_gear = input_vec[1];        // y_base is 2nd-variable
+    double y_gear = gear_design::siggear_f_gearprofile(x_gear);
 
+    /* output: objective function */
+    double res_1plus2 = -1. * x_base - y_base + x_gear * (sin + cos) - y_gear * (sin + cos) - radius * (sin - cos);
 
-    return res;
+    return res_1plus2;
 }
 
 
