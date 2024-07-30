@@ -14,6 +14,19 @@ double obj_gearprofile1_gearprofile2_intersection_nlopt(
                                                         std::vector<double>& grad, 
                                                         void* f_data);
  
+double calc_sigbase_y_base_objfunc_shape(
+                                         const std::vector<double>& opt_vec,
+                                         std::vector<double>& grad,
+                                         void* f_data);
+
+// double calc_sigbase_y_base_objfunc_shape(
+//                                          double& x_gear,    // variable to optmize 
+//                                          double& x_base,    // input of sigbase_y_base
+//                                          double& radius,    // parameter
+//                                          double& theta);    // parameter
+
+
+
 
 }   // namespace gear_design
 

@@ -11,13 +11,13 @@ namespace gear_design {
 struct GearParamFgear {
     double radius;  // mm
     double theta;   // rad
-    double quad_a;  
-    double quad_b;
-    // double module;
-    // double diameter;
+    double x_base;  // input for objfunction of 
 
-    GearParamFgear(double r, double th, double a, double b):
-                       radius(r), theta(th), quad_a(a), quad_b(b) {}
+    // double quad_a;      // maybe, no need
+    // double quad_b;      // maybe, no need
+
+    GearParamFgear(double r, double th, double xbase):
+                       radius(r), theta(th), x_base(xbase) {}
 };
 
 

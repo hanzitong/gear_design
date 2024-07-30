@@ -10,28 +10,18 @@
 
 
 int main() {
-    std::cout << "here!!!!!!!!!!!!" << std::endl;
     /* basic declaration */
-    int N = 1000;
+    int N = 100;
     std::vector<double> y_base_record(N, 0.);
     std::vector<double> x_gear_record(N, 0.);
-    std::cout << "here!!!!!!!!!!!!" << std::endl;
-    std::vector<std::pair<double, double>> g_record(N, {0., 0.});
-    // double g_record[2000][2000];
-    // for (int i = 0; i < 2000; ++i) {
-    //     for (int j = 0; j < 2000; ++j) {
-    //         g_record[i][j] = 0.;
-    //     }
-    // }
+    std::vector<std::vector<double>> g_record(N, std::vector<double>(N, 0.));
     std::vector<double> dammy(10, 0.);
-
-    std::cout << "here!!!!!!!!!!!!" << std::endl;
 
     /* prepare the plot range of x-axis */
     double radius = 0.2;        // [m]
     double theta = 100. / 180 * M_PI;
-    double y_base_range_start = 10.;
-    double x_gear_range_start = 10.;
+    double y_base_range_start = -20.;
+    double x_gear_range_start = -20.;
     double range_delta = 0.5;   // maybe need to avoid x=0
 
     /* prepare parameters which objective function needs */
@@ -47,9 +37,9 @@ int main() {
         initial_val[0] = y_base_record[i];
         for (int j = 0; j < N; ++j) {
             initial_val[1] = x_gear_record[j];
-            // g_record[i][j] = \
-            //     gear_design::obj_gearprofile1_gearprofile2_intersection_nlopt(initial_val, dammy, (void*)&params);
-            g_record[i][j] = 1.;
+            g_record[i][j] = \
+                gear_design::obj_gearprofile1_gearprofile2_intersection_nlopt(initial_val, dammy, (void*)&params);
+            // g_record[i][j] = 1.;
         }
     }
 

@@ -1,4 +1,4 @@
-
+ 
 #include <iostream>
 #include <vector>
 #include <nlopt.hpp>
@@ -22,13 +22,15 @@ namespace gear_design{
 *==============================*/
 
 // function name correct ???????????????
+// it seems NOT CORRECT (need to change in the future)
 double obj_gearprofile1_gearprofile2_intersection_nlopt(
                                                         const std::vector<double>& input_vec,
                                                         std::vector<double>& grad, 
                                                         void* f_data) {
+    /* cast parameters from input structs (nlopt manner) */
     gear_design::GearParamFgear* params = static_cast<gear_design::GearParamFgear*>(f_data);
 
-    /* rename and cache */
+    /* rename & cache */
     double radius = params -> radius;
     double theta = params -> theta;
     double cos = std::cos(theta);
@@ -45,18 +47,33 @@ double obj_gearprofile1_gearprofile2_intersection_nlopt(
 }
 
 
-double calc_gearprofile1_gearprofile2_intersection(double x_base, double radius, double theta) {
-    /*
-        1st step: plot obj function shape
-        2nd step: revize obj function shape
-        3rd step:
-    */
+// double calc_sigbase_y_base_objfunc_shape(
+//                                          double& x_gear,    // variable to optmize 
+//                                          double& x_base,    // input of sigbase_y_base
+//                                          double& radius,    // parameter
+//                                          double& theta) {   // parameter
+double calc_sigbase_y_base_objfunc_shape(
+                                         const std::vector<double>& opt_vec,
+                                         std::vector<double>& grad,
+                                         void* f_data)
+{
+    /* cast parameters from input structs (nlopt manner) */
+    gear_design::GearParamFgear* params = static_cast<gear_design::GearParamFgear*>(f_data);
 
-    // nlopt::opt obj_intersection(nlopt::LN_COBYLA, 2);
-    // obj_intersection.set_min_objective(obj_gearprofile1_gearprofile2_intersection_nlopt, dammy, (void*)params);
+    /* rename & cache */
+    double radius = params -> radius;
+    double theta = params -> theta;
+    double cos = std::cos(theta);
+    double sin = std::sin(theta);
+    double x_base = params -> x_base;
+    double x_gear = opt_vec[0];
+    double y_gear = siggear_f_gearprofile(x_gear);
+
+    double res = x_base - x_gear * cos + y_gear * sin + radius * sin;
 
 
-    return -1;
+    return res;         // for using root finding algorithm
+    // return res * res;   // for using optimization algorithm
 }
 
 
