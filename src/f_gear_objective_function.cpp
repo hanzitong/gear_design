@@ -4,7 +4,6 @@
 #include <nlopt.hpp>
 
 #include "../include/gear_design/f_gear.hpp"
-#include "../include/gear_design/sigbase_f_gear.hpp"
 
 
 namespace gear_design{
@@ -21,12 +20,14 @@ namespace gear_design{
 |  };                           |
 *==============================*/
 
-// function name correct ???????????????
-// it seems NOT CORRECT (need to change in the future)
-double obj_gearprofile1_gearprofile2_intersection_nlopt(
-                                                        const std::vector<double>& input_vec,
-                                                        std::vector<double>& grad, 
-                                                        void* f_data) {
+double obj_calc_sigbase_y_from_xgear_2variable(
+                                               const std::vector<double>& input_vec,
+                                               std::vector<double>& grad, 
+                                               void* f_data)
+{
+    /*-----------------------------------------------------------*
+    | 1 equation, 2 variables, it cannot determine solution..... |
+    *-----------------------------------------------------------*/
     /* cast parameters from input structs (nlopt manner) */
     gear_design::GearParamFgear* params = static_cast<gear_design::GearParamFgear*>(f_data);
 
@@ -47,15 +48,10 @@ double obj_gearprofile1_gearprofile2_intersection_nlopt(
 }
 
 
-// double calc_sigbase_y_base_objfunc_shape(
-//                                          double& x_gear,    // variable to optmize 
-//                                          double& x_base,    // input of sigbase_y_base
-//                                          double& radius,    // parameter
-//                                          double& theta) {   // parameter
-double calc_sigbase_y_base_objfunc_shape(
-                                         const std::vector<double>& opt_vec,
-                                         std::vector<double>& grad,
-                                         void* f_data)
+double obj_calc_sigbase_y_from_xgear_1variable(
+                                               const std::vector<double>& opt_vec,
+                                               std::vector<double>& grad,
+                                               void* f_data)
 {
     /* cast parameters from input structs (nlopt manner) */
     gear_design::GearParamFgear* params = static_cast<gear_design::GearParamFgear*>(f_data);
@@ -65,15 +61,16 @@ double calc_sigbase_y_base_objfunc_shape(
     double theta = params -> theta;
     double cos = std::cos(theta);
     double sin = std::sin(theta);
-    double x_base = params -> x_base;
-    double x_gear = opt_vec[0];
+    double x_base = params -> x_base;   // input
+    double x_gear = opt_vec[0];         // variable to optimize
     double y_gear = siggear_f_gearprofile(x_gear);
 
+    /* objective function */
     double res = x_base - x_gear * cos + y_gear * sin + radius * sin;
 
 
-    return res;         // for using root finding algorithm
-    // return res * res;   // for using optimization algorithm
+    // return res;         // for using root finding algorithm
+    return res * res;   // for using optimization algorithm
 }
 
 

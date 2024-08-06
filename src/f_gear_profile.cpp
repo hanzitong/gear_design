@@ -1,16 +1,20 @@
 
-
 #include <iostream>
 #include <cmath>
 #include <vector>
 #include <cassert>
 #include <Eigen/Core>
+#include <nlopt.hpp>
+
+#include "../include/gear_design/f_gear.hpp"
+#include "../include/gear_design/f_gear_objective_function.hpp"
 
 
 namespace gear_design {
 
 
-double siggear_f_gearprofile(const double& x) {
+double siggear_f_gearprofile(const double& x)
+{
     /*
     example gear profile
 
@@ -40,12 +44,63 @@ double siggear_f_gearprofile(const double& x) {
     } else if (-1. <= x && x <= 1.) {   // tooth tip
         return -4. * x * x + 20.;
     } else {
-        return std::nan(" returned nan here ");
+        return std::nan("siggear_f_gearprofile()");
     }
 }
 
 
-double calc_sigbase_f_gearprofile_x_coordinate(const double& siggear_x_param, const double& radius, const double& theta) {
+double calc_sigbase_y_gear_from_xgear(
+    const double& x_base,
+    const double& radius,
+    const double& theta,
+    // Eigen::Vector3d* sigbase_vec = nullptr)   // optional argument (for test)
+    Eigen::Vector3d* sigbase_vec)   // optional argument (for test)
+{
+    /* prepare optimization materials */
+    std::vector<double> opt_variable(1, 0.);
+    double val_objfunc = 0.;
+    GearParamFgear param(radius, theta, x_base);
+    nlopt::opt calc_y_base = nlopt::opt(nlopt::LN_COBYLA, 1);
+    calc_y_base.set_min_objective(obj_calc_sigbase_y_from_xgear_1variable, (void*)&param);
+
+    /* check the value of theta */
+    if (0. < theta && theta < M_PI / 2.) {
+        // std::vector<double> ub(1, 0.);
+        // calc_y_base.set_upper_bounds(ub);
+        calc_y_base.set_upper_bounds(std::vector<double>(1, 0.));
+    } else if (M_PI / 2. < theta && theta < M_PI) {
+        // std::vector<double> lb(1, 0.);
+        // calc_y_base.set_lower_bounds(lb);
+        calc_y_base.set_lower_bounds(std::vector<double>(1, 0.));
+    } else if (theta == M_PI / 2.) {
+        // do nothing
+    } else {
+        return std::nan("in calc_sigbase_y_gear_from_xgear(), out of theta range");
+    }
+
+    /* calculate y_base */
+    calc_y_base.optimize(opt_variable, val_objfunc);
+    double y_base = opt_variable[0];
+
+    // assert(std::abs(val_objfunc) <= 1e-6);      // nearly equal
+
+    /* for test */
+    if (sigbase_vec) {      // if sigbase_vec is given
+        (*sigbase_vec)[0] = x_base;
+        (*sigbase_vec)[1] = y_base;
+        (*sigbase_vec)[2] = 1.;
+    }
+
+
+    return y_base;
+}
+
+
+double calc_sigbase_f_gearprofile_x_coordinate(
+    const double& siggear_x_param,
+    const double& radius,
+    const double& theta)
+{
     /*
     for cauculate x coordinate of f-gear which needs siggear_x_param for parameter.
 
@@ -80,7 +135,8 @@ double calc_sigbase_f_gearprofile_x_coordinate(const double& siggear_x_param, co
 double calc_sigbase_f_gearprofile_y_coordinate(
     const double& siggear_f_gearprofile_x_param,
     const double& radius,
-    const double& theta) {
+    const double& theta)
+{
     /*
     for cauculate y coordinate of f-gear which needs siggear_y_param for parameter.
 
@@ -116,9 +172,9 @@ double calc_sigbase_f_gearprofile_y_coordinate(
 Eigen::Vector3d calc_sigbase_f_gearprofile_vector(
     const Eigen::Vector3d& siggear_gearprofile,     // input (siggear_x, siggear_y, 1)
     Eigen::Vector3d& sigbase_gearprofile,           // output 
-    const double& radius,               // cutter radius
-    const double& theta) {              // the angle between axis-siggear_y_coordinate relative to axis-sigbase_x_coordinate
-
+    const double& radius,     // cutter radius
+    const double& theta)      // the angle between axis-siggear_y_coordinate relative to axis-sigbase_x_coordinate
+{
     /*
     this function transforms siggear_gearprofile to sigbase_gearprofile.
     
