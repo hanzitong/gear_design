@@ -62,6 +62,7 @@ double calc_sigbase_y_gear_from_xgear(
     GearParamFgear param(radius, theta, x_base);
     nlopt::opt calc_y_base = nlopt::opt(nlopt::LN_COBYLA, 1);
     calc_y_base.set_min_objective(obj_calc_sigbase_y_from_xgear_1variable, (void*)&param);
+    calc_y_base.set_stopval(1e-6);
 
     /* check the value of theta */
     if (0. < theta && theta < M_PI / 2.) {
