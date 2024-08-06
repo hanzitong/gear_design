@@ -1,3 +1,6 @@
+/*
+old code 
+*/
 
 
 #include <random>
@@ -8,7 +11,7 @@
 #include <Eigen/Core>
 
 
-TEST(SolutionTest, OnFunction) {
+TEST(SolutionTest, Y_base) {
     std::random_device rd;
     std::mt19937 gen(rd());
 
