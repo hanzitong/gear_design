@@ -1,6 +1,4 @@
 
-// g++ 
-
 #include <random>
 #include <cassert>
 #include <cmath>
@@ -46,8 +44,10 @@ TEST(SolutionTest, SameResult) {
                                         1.;
         sigbase_f_gearprofile_vector = \
             gear_design::calc_sigbase_f_gearprofile_vector(
-                siggear_f_gearprofile_vector, sigbase_f_gearprofile_vector,
-                radius, theta);
+                siggear_f_gearprofile_vector,
+                sigbase_f_gearprofile_vector,
+                radius,
+                theta);
 
         /* test */
         ASSERT_NEAR(sigbase_f_gearprofile_vector[0], test_sigbase_f_gearprofile_x, 1e-6);
@@ -56,14 +56,13 @@ TEST(SolutionTest, SameResult) {
 
 
     // TODO: test with inverse matrix.
-    //       t
 }
 
 
-int main(int argc, char **argv){
+int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
 
-    for(int i = 0; i < 10000; ++i){
+    for (int i = 0; i < 10000; ++i) {
         RUN_ALL_TESTS();
     }
 

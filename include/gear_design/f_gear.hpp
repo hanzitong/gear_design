@@ -11,7 +11,9 @@ namespace gear_design {
 struct GearParamFgear {
     double radius;  // [m]
     double theta;   // [rad]
-    double x_base;  // input for calc_sigbase_y_base()
+    double x_base;
+    double x_gear;
+    double y_base;
 
     GearParamFgear(double r, double th, double xbase):
                        radius(r), theta(th), x_base(xbase)
@@ -23,27 +25,32 @@ struct GearParamFgear {
 double siggear_f_gearprofile(const double& x_gear);
 // double siggear_real_gearprofile(const double& x_gear);       // define it in another file
 
-double calc_sigbase_y_gear_from_xgear(
+// calc_gearprofile_sigbase_y_gear_from_xbase
+double calc_sigbase_y_gear_from_xbase(
     const double& x_base,
     const double& radius,
     const double& theta,
     Eigen::Vector3d* sigbase_vec = nullptr);
 
-
+// calc_gearprofile_sigbase_x_from_siggear_x
 double calc_sigbase_f_gearprofile_x_coordinate(
     const double& siggear_x_param,
     const double& radius,
     const double& theta);
+
+// calc_gearprofile_sigbase_y_from_siggear_x
 double calc_sigbase_f_gearprofile_y_coordinate(
     const double& siggear_f_gearprofile_x_param,
     const double& radius,
     const double& theta);
 
-Eigen::Vector3d calc_sigbase_f_gearprofile_vector(
-    const Eigen::Vector3d& siggear_P,
-    Eigen::Vector3d& sigbase_P,
-    const double& radius,
-    const double& theta);
+// Eigen::Vector3d calc_sigbase_f_gearprofile_vector(
+Eigen::Vector3d trans_siggear_to_sigbase(
+        const Eigen::Vector3d& siggear_P,   // input
+        Eigen::Vector3d& sigbase_P,         // output
+        const double& radius,
+        const double& theta
+    );
 
 
 
