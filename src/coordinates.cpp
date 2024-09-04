@@ -49,6 +49,7 @@ double siggear_f_gearprofile(const double& x)
 }
 
 
+// NAME SUGGESTION: calc_gearprofile_sigbase_x
 double calc_sigbase_f_gearprofile_x_coordinate(
     const double& siggear_x_param,
     const double& radius,
@@ -85,13 +86,15 @@ double calc_sigbase_f_gearprofile_x_coordinate(
 }
 
 
+// NAME SUGGESTION: calc_gearprofile_baseY_from_gearX
+// NAME SUGGESTION: calc_gearprofile_sigbase_y_from_siggear_x
 double calc_sigbase_f_gearprofile_y_coordinate(
     const double& siggear_f_gearprofile_x_param,
     const double& radius,
     const double& theta)
 {
     /*
-    for cauculate y coordinate of f-gear which needs siggear_y_param for parameter.
+    for cauculate y coordinate of f-gear which needs siggear_y_param as a parameter.
 
       sigbase_y_coordinate ^
                            |         ^ siggear_y_coordinate
@@ -121,6 +124,7 @@ double calc_sigbase_f_gearprofile_y_coordinate(
 }
 
 
+// NAME SUGGESTION: trans_from_sigbase_Pvec_to_sigbase_Pvec
 Eigen::Vector3d trans_siggear_to_sigbase(
     const Eigen::Vector3d& siggear_gearprofile,     // input (siggear_x, siggear_y, 1)
     Eigen::Vector3d& sigbase_gearprofile,           // output 
@@ -180,6 +184,12 @@ Eigen::Vector3d trans_siggear_to_sigbase(
 }
 
 
+// NAME SUGGESTION: trans_from_sigbase_Pvec_to_sigbase_Pvec
+/* TODO: implement transformation function using inverse matrix of above funcion */
+// Eigen::Vector3d trans_sigbase_to_siggear(){}
+
+
+
 double calc_sigbase_y_gear_from_xbase(
     const double& x_base,
     const double& radius,
@@ -210,7 +220,7 @@ double calc_sigbase_y_gear_from_xbase(
     0. = y_base - x_gear * sin - y_gear * cos - r * cos      (equation 2)
     */
 
-    // STEP1
+    // STEP1: calc Xgear from Xbase using equation1
     /* prepare optimization materials */
     std::vector<double> opt_variable(1, 50.);
     double val_objfunc = 0.;
