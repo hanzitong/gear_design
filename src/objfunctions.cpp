@@ -3,8 +3,8 @@
 #include <vector>
 #include <nlopt.hpp>
 
-#include "../include/gear_design/f_gear.hpp"
-#include "../include/gear_design/f_gear_objective_function.hpp"
+#include "../include/gear_design/coordinates.hpp"
+#include "../include/gear_design/objfunctions.hpp"
 
 
 namespace gear_design{
@@ -73,7 +73,6 @@ double obj_calc_siggear_x_from_xbase(   // optimization step 1 in calc_sigbase_y
 
 //     return res * res;
 // }
-
 
 
 
