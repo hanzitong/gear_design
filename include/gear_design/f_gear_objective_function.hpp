@@ -8,13 +8,20 @@
 
 namespace gear_design{
 
- 
+struct GearParamFgear {
+    double radius;  // [m]
+    double theta;   // [rad]
+    double x_base;
+    double x_gear;
+    double y_base;
+    double y_gear;  // temp
 
-// double calc_sigbase_y_base_objfunc_shape(
-//                                          const std::vector<double>& opt_vec,
-//                                          std::vector<double>& grad,
-//                                          void* f_data
-//                                         );
+    GearParamFgear(double r, double th, double xbase):
+                       radius(r), theta(th), x_base(xbase)
+    {
+    }
+};
+
 
 double obj_calc_siggear_x_from_xbase(
                                      const std::vector<double>& opt_vec,
@@ -22,13 +29,19 @@ double obj_calc_siggear_x_from_xbase(
                                      void* f_data
                                     );
 
-double obj_calc_sigbase_y_from_xbase(
-                                     const std::vector<double>& opt_vec,
-                                     std::vector<double>& grad,
-                                     void* f_data
-                                    );
+// double calc_sigbase_y_base_objfunc_shape(
+//                                          const std::vector<double>& opt_vec,
+//                                          std::vector<double>& grad,
+//                                          void* f_data
+//                                         );
 
+// double obj_calc_sigbase_y_from_xbase(
+//                                      const std::vector<double>& opt_vec,
+//                                      std::vector<double>& grad,
+//                                      void* f_data
+//                                     );
 
+struct GearParamFgear;
 
 
 }   // namespace gear_design

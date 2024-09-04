@@ -7,15 +7,18 @@
 
 
 int main(const int argc, const char* argv[]) {
-    // gear_design::GearParamQuadratic chank = gear_design::GearParamQuadratic(10., 34. / 180. * M_PI, 4., 12.);
-    double x_test = 0.;
-    double y_test = gear_design::siggear_gearprofile_fgear(x_test);
-    double testes = gear_design::calc_sigbase_gearprofile_fgear_xy_vector();
+    double radius = 5.;
+    double theta = 30 / 180 * M_PI;
+    double x_gear = 0.;
+    double y_gear = gear_design::siggear_f_gearprofile(x_gear);
+    double siggear_x = 1.;
+    // double sigbase_y = gear_design::calc_sigbase_y_gear_from_xbase(siggear_x, radius, theta);
+    double sigbase_y = y_gear;
 
     // double y = gear_design::calc_sig0y_quadratic(2., &chank);
     // double y = gear_design::calc_sig0y_quadratic(0., &chank);
 
-    std::cout << y_test << std::endl;
+    std::cout << sigbase_y << std::endl;
 
 
     return 0;

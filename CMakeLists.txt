@@ -16,9 +16,13 @@ include_directories(
   ${Boost_INCLUDE_DIRS}
 )
 
-add_executable(f_gear example/main.cpp src/f_gear.cpp)
+add_executable(f_gear
+  example/main.cpp
+  src/f_gear_profile.cpp
+  src/f_gear_objective_function.cpp
+)
 target_include_directories(f_gear PRIVATE include)
-# target_link_libraries(f_gear PRIVATE nlopt)
+target_link_libraries(f_gear PRIVATE nlopt)
 
 # add_executable(quad_gear example/main.cpp src/quadratic_gear.cpp)
 # target_include_directories(quad_gear PRIVATE include)

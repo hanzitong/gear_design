@@ -4,22 +4,24 @@
 #include <nlopt.hpp>
 
 #include "../include/gear_design/f_gear.hpp"
+#include "../include/gear_design/f_gear_objective_function.hpp"
 
 
 namespace gear_design{
 
-/*==========< memo >============*
-|  // defined at f_gear.hpp     |
-|                               |
-|  struct GearParamFgear {      |
-|      double radius;  // mm    |      
-|      double theta;   // rad   |
-|      double quad_a;           |
-|      double quad_b;           |
-|                               |
-|  };                           |
-*==============================*/
-
+/*==========< memo >================================*
+|  // defined at f_gear_objective_function.hpp      |
+|                                                   |
+|  struct GearParamFgear {                          |
+|      double radius;  // mm                        |      
+|      double theta;   // rad                       |
+|      double x_base;                               |
+|      double x_gear;                               |
+|      double y_base;                               |
+|      double y_gear;                               |
+|                                                   |
+|  };                                               |
+*==================================================*/
 
 double obj_calc_siggear_x_from_xbase(   // optimization step 1 in calc_sigbase_y_gear_from_xbase()
                                      const std::vector<double>& opt_vec,

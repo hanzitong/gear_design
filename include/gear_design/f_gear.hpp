@@ -8,20 +8,6 @@
 namespace gear_design {
 
 
-struct GearParamFgear {
-    double radius;  // [m]
-    double theta;   // [rad]
-    double x_base;
-    double x_gear;
-    double y_base;
-
-    GearParamFgear(double r, double th, double xbase):
-                       radius(r), theta(th), x_base(xbase)
-    {
-    }
-};
-
-
 double siggear_f_gearprofile(const double& x_gear);
 // double siggear_real_gearprofile(const double& x_gear);       // define it in another file
 
@@ -51,7 +37,6 @@ Eigen::Vector3d trans_siggear_to_sigbase(
         const double& radius,
         const double& theta
     );
-
 
 
 

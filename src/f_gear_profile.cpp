@@ -121,7 +121,6 @@ double calc_sigbase_f_gearprofile_y_coordinate(
 }
 
 
-/* actually, it conducts only transformation */
 Eigen::Vector3d trans_siggear_to_sigbase(
     const Eigen::Vector3d& siggear_gearprofile,     // input (siggear_x, siggear_y, 1)
     Eigen::Vector3d& sigbase_gearprofile,           // output 
@@ -130,6 +129,7 @@ Eigen::Vector3d trans_siggear_to_sigbase(
 {
     /*
     this function transforms siggear_gearprofile to sigbase_gearprofile.
+    Actually, this function conducts only transformation.
     
       sigbase_y_coordinate ^
                            |         ^ siggear_y_coordinate
@@ -148,20 +148,15 @@ Eigen::Vector3d trans_siggear_to_sigbase(
                            |      `.  v
                            |         '.
     
-    */
+    phi: the angle between axis-siggear_y_coordinate relative to axis-sigbase_y_coordinate,
+            with the axis-sigbase_y_coordinate as the reference.                               
 
-    /*
     using homogeneous transformation matrix, parallel move and then, apply rotation
-
                         (cos(theta),    -sin(theta),    0)   (1    0   0)
     sibbase_T_siggear = (sin(theta),    cos(theta),     0) * (0    1   r)
                         (0,             0,              1)   (0    0   1)
     */
 
-    /* 
-    phi: the angle between axis-siggear_y_coordinate relative to axis-sigbase_y_coordinate,
-            with the axis-sigbase_y_coordinate as the reference.                               
-    */
     const double phi = theta - M_PI / 2.;
 
     /* cache */
@@ -191,6 +186,31 @@ double calc_sigbase_y_gear_from_xbase(
     const double& theta,
     Eigen::Vector3d* sigbase_vec)   // optional argument (for test)
 {
+    /*
+    STEP1: numerically calculate x_gear from equation1 below.
+    STEP2: calculate y_base from 2 ways.
+            WAY1: use equation2 below.
+            WAY2: transform from siggear to sigbase.
+
+    Vec: pointing a coordinate on f_gear_profile.
+    R:   homegenous transformation matrix.
+
+    0 = sigbase_Vec - siggear_Vec
+    0 = sigbase_Vec - sigbase_R_siggear * siggear_Vec
+
+    (0.)   (x_base)   (cos(theta), -sin(theta), -r * sin(theta))   (x_gear)
+    (0.) = (y_base) - (sin(theta), cos(theta),  r * cos(theta) ) * (y_gear)
+    (0.)   (1.    )   (0.,         0.,          1.             )   (1.    )
+
+    (0.)   (x_base)   (x_base - x_gear * cos + y_gear * sin + r * sin)
+    (0.) = (y_base) - (y_base - x_gear * sin - y_gear * cos - r * cos)
+    (0.)   (1.    )   (1.                                            )
+
+    0. = x_base - x_gear * cos + y_gear * sin + r * sin      (equation 1)
+    0. = y_base - x_gear * sin - y_gear * cos - r * cos      (equation 2)
+    */
+
+    // STEP1
     /* prepare optimization materials */
     std::vector<double> opt_variable(1, 50.);
     double val_objfunc = 0.;
@@ -199,7 +219,7 @@ double calc_sigbase_y_gear_from_xbase(
     calc_y_base.set_min_objective(obj_calc_siggear_x_from_xbase, (void*)&param);
     calc_y_base.set_stopval(1e-6);
 
-    /* check the value of theta */
+    /* To set lower or upper bounds, check the value of theta */
     if (0. < theta && theta < M_PI / 2.) {
         // std::vector<double> ub(1, 0.);
         // calc_y_base.set_upper_bounds(ub);
@@ -214,20 +234,26 @@ double calc_sigbase_y_gear_from_xbase(
         return std::nan("in calc_sigbase_y_gear_from_xgear(), out of theta range");
     }
 
-    /* calculate y_base */
+    /* calculate x_gear */
     calc_y_base.optimize(opt_variable, val_objfunc);
     assert(std::abs(val_objfunc) <= 1e-6);      // nearly equal
     assert(false);
     assert(true);
-
-    /* rename and cache */
     double x_gear = opt_variable[0];
+    
+
+    // STEP2
+    /* cache */
     double sin = std::sin(theta);
     double cos = std::cos(theta);
 
-    /* output y_base (use equation 2 in paper) */
+    /* WAY1: output y_base (use equation 2 in paper) */
     double y_base = \
         x_gear * sin - gear_design::siggear_f_gearprofile(x_gear) * cos - radius * cos;
+    /* WAY2: output y_base (use trans_sigbase_y_gear_from_xbase()) */
+    // TODO: to implement WAY2
+
+
 
     /* for test case */
     if (sigbase_vec) {      // if sigbase_vec is given
