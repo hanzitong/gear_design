@@ -18,8 +18,10 @@ include_directories(
 
 add_executable(f_gear
   example/main.cpp
-  src/f_gear_profile.cpp
-  src/f_gear_objective_function.cpp
+  # src/f_gear_profile.cpp
+  # src/f_gear_objective_function.cpp
+  src/coordinates.cpp
+  src/objfunctions.cpp
 )
 target_include_directories(f_gear PRIVATE include)
 target_link_libraries(f_gear PRIVATE nlopt)

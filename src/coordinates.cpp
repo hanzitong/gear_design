@@ -13,10 +13,12 @@
 namespace gear_design {
 
 
+// NAME SUGGESTION: calc_gearprofile_siggear_y_from_siggear_x
 double siggear_f_gearprofile(const double& x)
 {
     /*
-    EXAMPLE gear profile
+    Define gear profile as the function format here.
+    This is a EXAMPLE gear profile
 
                    ^ siggear_y_coordinate
                    |
@@ -49,8 +51,9 @@ double siggear_f_gearprofile(const double& x)
 }
 
 
-// NAME SUGGESTION: calc_gearprofile_sigbase_x
-double calc_sigbase_f_gearprofile_x_coordinate(
+// NAME SUGGESTION: calc_gearprofile_sigbase_x_from_siggear_x
+// PREVIOUS NAME: double calc_sigbase_f_gearprofile_x_coordinate(
+double calc_gearprofile_sigbase_x_from_siggear_x(
     const double& siggear_x_param,
     const double& radius,
     const double& theta)
@@ -86,9 +89,9 @@ double calc_sigbase_f_gearprofile_x_coordinate(
 }
 
 
-// NAME SUGGESTION: calc_gearprofile_baseY_from_gearX
 // NAME SUGGESTION: calc_gearprofile_sigbase_y_from_siggear_x
-double calc_sigbase_f_gearprofile_y_coordinate(
+// PREVIOUS NAME: double calc_sigbase_f_gearprofile_y_coordinate(
+double calc_gearprofile_sigbase_y_from_siggear_x(
     const double& siggear_f_gearprofile_x_param,
     const double& radius,
     const double& theta)
@@ -125,7 +128,9 @@ double calc_sigbase_f_gearprofile_y_coordinate(
 
 
 // NAME SUGGESTION: trans_from_sigbase_Pvec_to_sigbase_Pvec
-Eigen::Vector3d trans_siggear_to_sigbase(
+// NAME SUGGESTION: trans_Pvec_from_sigbase_to_sigbase
+// PREVIOUS NAME: Eigen::Vector3d trans_siggear_to_sigbase(
+Eigen::Vector3d trans_Pvec_from_siggear_to_sigbase(
     const Eigen::Vector3d& siggear_gearprofile,     // input (siggear_x, siggear_y, 1)
     Eigen::Vector3d& sigbase_gearprofile,           // output 
     const double& radius,     // cutter radius
@@ -190,7 +195,10 @@ Eigen::Vector3d trans_siggear_to_sigbase(
 
 
 
-double calc_sigbase_y_gear_from_xbase(
+// NAME SUGGESTION: calc_gearprofile
+// PREVOUS NAME: double calc_sigbase_y_gear_from_xbase(
+// double calc_sigbase_y_gear_from_xbase(
+double calc_gearprofile_sigbase_y_from_sigbase_x(
     const double& x_base,
     const double& radius,
     const double& theta,

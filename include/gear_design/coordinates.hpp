@@ -18,14 +18,14 @@ double calc_sigbase_y_gear_from_xbase(
     const double& theta,
     Eigen::Vector3d* sigbase_vec = nullptr);
 
-// NAME SUGGESTION: calc_gearprofile_sigbase_x_from_siggear_x
-double calc_sigbase_f_gearprofile_x_coordinate(
+// PREVIOUS NAME: double calc_sigbase_f_gearprofile_x_coordinate(
+double calc_gearprofile_sigbase_x_from_siggear_x(
     const double& siggear_x_param,
     const double& radius,
     const double& theta);
 
-// NAME SUGGESTION: calc_gearprofile_sigbase_y_from_siggear_x
-double calc_sigbase_f_gearprofile_y_coordinate(
+// PREVIOUS NAME: double calc_sigbase_f_gearprofile_y_coordinate(
+double calc_gearprofile_sigbase_y_siggear_x(
     const double& siggear_f_gearprofile_x_param,
     const double& radius,
     const double& theta);

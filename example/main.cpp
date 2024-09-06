@@ -2,8 +2,7 @@
 
 #include <iostream>
 #include <cmath>
-// #include <gear_design/quadratic_gear.hpp>
-#include <gear_design/f_gear.hpp>
+#include <gear_design/coordinates.hpp>
 
 
 int main(const int argc, const char* argv[]) {

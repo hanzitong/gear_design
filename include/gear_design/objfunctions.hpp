@@ -8,6 +8,7 @@
 
 namespace gear_design{
 
+// NAME SUGGESTION: GearParam&Coordinate
 struct GearParamFgear {
     double radius;  // [m]
     double theta;   // [rad]
@@ -23,6 +24,7 @@ struct GearParamFgear {
 };
 
 
+// NAME SUGGESTION: _obj_siggear_x_from_xbase
 double obj_calc_siggear_x_from_xbase(
                                      const std::vector<double>& opt_vec,
                                      std::vector<double>& grad,
