@@ -5,8 +5,8 @@
 #include <cassert>
 #include <gtest/gtest.h>
 
-#include "../include/gear_design/f_gear.hpp"
-#include "../include/gear_design/f_gear_objective_function.hpp"
+#include "../include/gear_design/coordinates.hpp"
+#include "../include/gear_design/objfunctions.hpp"
 
 
 

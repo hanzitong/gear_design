@@ -8,16 +8,17 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 
-add_executable(calc_ybase 
-    test_f_gear_calc_y_base_from_xgear.cpp
-    ../src/f_gear_objective_function.cpp
-    ../src/f_gear_profile.cpp
+add_executable(test_coordinates_transformation 
+    test_coordinates.cpp
+    # test_coordinates_transformation.cpp
+    ../src/objfunctions.cpp
+    ../src/coordinates.cpp
 )
-target_include_directories(calc_ybase PRIVATE include)
-target_include_directories(calc_ybase PRIVATE /usr/include/eigen3)
-target_link_libraries(calc_ybase PRIVATE nlopt)
-target_link_libraries(calc_ybase PRIVATE gtest)
-target_link_libraries(calc_ybase PRIVATE pthread)
+target_include_directories(test_coordinates_transformation PRIVATE include)
+target_include_directories(test_coordinates_transformation PRIVATE /usr/include/eigen3)
+target_link_libraries(test_coordinates_transformation PRIVATE nlopt)
+target_link_libraries(test_coordinates_transformation PRIVATE gtest)
+target_link_libraries(test_coordinates_transformation PRIVATE pthread)
 
 
 
