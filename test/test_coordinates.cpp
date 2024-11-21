@@ -108,7 +108,7 @@ TEST(SolutionTest, TransformGearBase) {
         ASSERT_NEAR(expected_arr_siggear_Pvecprofile[i][0], actual_arr_siggear_Pvecprofile[i][0], 1e-6);    // error here 2024/11/21
     }
 
-    /* Eigen usage test (not necessary) */
+    /* Eigen usage test (not difinitly necessary) */
     for (int j = 0; j < N; ++j) {
         actual_noneigen_arr_sigbase_x[j] = \
             gear_design::_calc_gearprofile_sigbase_x_from_siggear_x(     // non-eigen function
@@ -126,7 +126,6 @@ TEST(SolutionTest, TransformGearBase) {
         ASSERT_NEAR(actual_arr_sigbase_Pvecprofile[j][0], actual_noneigen_arr_sigbase_x[j], 1e-6);
         ASSERT_NEAR(actual_arr_sigbase_Pvecprofile[j][1], actual_noneigen_arr_sigbase_yprofile[j], 1e-6);
     }
-
 }
 
 
