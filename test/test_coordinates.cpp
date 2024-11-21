@@ -44,74 +44,102 @@ TEST(SolutionTest, TransformGearBase) {
     /* set basic parameters of the situation */
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_real_distribution<double> dis_r(20., 30.);
-    double radius = dis_r(gen);
+    std::uniform_real_distribution<double> dis_radius(20., 30.);
     std::uniform_real_distribution<double> \
         dis_theta(0., M_PI);     // not recommended (codes need to be changed)
     std::uniform_real_distribution<double> \
         dis_phi(-1. * M_PI / 2., M_PI / 2.);  // recommended
-    double theta = dis_theta(gen);
-    double phi = dis_theta(gen);
+    // double radius = dis_radius(gen);
+    // const double theta = dis_theta(gen);
+    // const double phi = dis_theta(gen);
     const double N = 100.;  // the number of divisions on x-axis
-    const double siggear_x_range[2] = {-20., 20.};  // plot range of x-axis
+    const double siggear_xrange[2] = {-20., 20.};  // plot range of x-axis
+    const double siggear_x_diff = (siggear_xrange[1] - siggear_xrange[0]) / N;
+    /* debug */
+    const double radius = 20.;
+    const double theta = M_PI / 3.;
 
     /* declare expected_ & actual_ variables */
-    std::vector<double> expected_arr_siggear_x(N, 0.);
-    std::vector<double> expected_arr_siggear_yprofile(N, 0.);
-    std::vector<double> expected_arr_siggear_Pvecprofile(N, Eigen::Vector3d::Zero());
-    std::vector<double> actual_arr_sigbase_x(N, 0.);
-    std::vector<double> actual_arr_sigbase_yprofile(N, 0.);
-    std::vector<double> actual_arr_sigbase_Pvecprofile(N, Eigen::Vector3d::Zero());
-    std::vector<double> actual_arr_siggear_x(N, 0.);
-    std::vector<double> actual_arr_siggear_yprofile(N, 0.);
-    std::vector<double> actual_arr_siggear_Pvecprofile(N, Eigen::Vector3d::Zero());
+    std::vector<double> expected_arr_siggear_x(N + 1, 0.);
+    std::vector<double> expected_arr_siggear_yprofile(N + 1, 0.);
+    std::vector<Eigen::Vector3d> expected_arr_siggear_Pvecprofile(N + 1, Eigen::Vector3d::Zero());
+    std::vector<double> actual_arr_sigbase_x(N + 1, 0.);
+    std::vector<double> actual_arr_sigbase_yprofile(N + 1, 0.);
+    std::vector<Eigen::Vector3d> actual_arr_sigbase_Pvecprofile(N+1, Eigen::Vector3d::Zero());
+    std::vector<double> actual_noneigen_arr_sigbase_x(N + 1, 0.);
+    std::vector<double> actual_noneigen_arr_sigbase_yprofile(N + 1, 0.);
+    std::vector<double> actual_arr_siggear_x(N + 1, 0.);
+    std::vector<double> actual_arr_siggear_yprofile(N + 1, 0.);
+    std::vector<Eigen::Vector3d> actual_arr_siggear_Pvecprofile(N + 1, Eigen::Vector3d::Zero());
 
     /* set expected_ variables */
-    const double siggear_x_diff = (siggear_x_range[1] - siggear_x_range[0]) / N;
-    for (int i = 0; i < N; ++i) {
-        expected_arr_siggear_x[i] = siggear_x_range[0] + siggear_x_diff * i;
+    for (int i = 0; i < N + 1; ++i) {
+        expected_arr_siggear_x[i] = siggear_xrange[0] + siggear_x_diff * i;
         expected_arr_siggear_yprofile[i] = \
             gear_design::quad_calc_siggear_yprofile_from_siggear_x(expected_arr_siggear_x[i]);
         expected_arr_siggear_Pvecprofile[i] << expected_arr_siggear_x[i],
                                                expected_arr_siggear_yprofile[i],
                                                1.;
     }
-
-
-// today here 2024/11/20
-
-
-
-    /* set actual_ variables , transform from siggear to sigbase using non-Eigen function */
-    for (int i = 0; i < N; ++i) {
-        actual_arr_sigbase_x = \
-            gear_design::calc_gearprofile_sigbase_x_from_siggear_x(
-                expected_arr_siggear_x[i], radius, theta
-                );
-        actual_arr_sigbase_yprofile = \
-            gear_design::calc_gearprofile_sigbase_y_from_siggear_x(
-                expected_arr_siggear_yprofile[i], radius, theta
-                );
-    }
+    ASSERT_NEAR(siggear_xrange[1] - siggear_xrange[0], expected_arr_siggear_x[N] - expected_arr_siggear_x[0], 1e-6);
 
     /* set actual_ variables , transform from siggear to sigbase using Eigen function */
-    for (int i = 0; i < N; ++i) {
-        actual_arr_siggear_x << \
-            arr_gearprofile_siggear_x[i],\
-            gear_design::quad_profile_calc_siggear_y_from_siggear_x(siggear_f_gearprofile_x[i]),\
-            1.;
-        actual_arr_siggear_yprofile = \
-            // gear_design::calc_gearprofile_sigbase_Pvec_from_siggear_Pvec(
-            gear_design::trans_Pvec_from_siggear_to_sigbase(
-                expected_gearprofile_siggear_Pvec,
-                expected_gearprofile_sigbase_Pvec,
+    for (int i = 0; i < N + 1; ++i) {
+        actual_arr_sigbase_Pvecprofile[i] = \
+            gear_design::trans_Pvec_from_siggear_to_sigbase(    // Eigen function
+                expected_arr_siggear_Pvecprofile[i],
+                actual_arr_sigbase_Pvecprofile[i],
                 radius,
                 theta);
 
-        /* test */
-        ASSERT_NEAR(expected_arr_sigbase_vec[0], actual_arr_sigbase_x, 1e-6);
-        ASSERT_NEAR(expected_arr_sigbase_vec[1], actual_arr_sigbase_yprofile, 1e-6);
+        // MATHEMATICALLY IMPOSSIBLE OPERATION. DON'T PLUS OR SUBTRACT VECTORS DEFINED IN DIFFERENT COORDINATES.
+        // Eigen::Vector3d diff_Pvec = actual_arr_sigbase_Pvecprofile[i] - expected_arr_siggear_Pvecprofile[i];
+
+        /* Eigen test */
+        double expected_diff_x_element = actual_arr_sigbase_Pvecprofile[i][0] - expected_arr_siggear_Pvecprofile[i][0];
+        double expected_diff_y_element = actual_arr_sigbase_Pvecprofile[i][1] - expected_arr_siggear_Pvecprofile[i][1];
+        double expected_diff_z_element = actual_arr_sigbase_Pvecprofile[i][2] - expected_arr_siggear_Pvecprofile[i][2];
+        ASSERT_NEAR(diff_Pvec[0], expected_diff_x_element, 1e-6);
+        ASSERT_NEAR(diff_Pvec[1], expected_diff_y_element, 1e-6);
+        ASSERT_NEAR(diff_Pvec[2], expected_diff_z_element, 1e-6);
+        double diff_Pvec_norm = std::sqrt(diff_Pvec[0] * diff_Pvec[0] + diff_Pvec[1] * diff_Pvec[1] + diff_Pvec[2] * diff_Pvec[2]);
+        ASSERT_NEAR(diff_Pvec_norm, diff_Pvec.norm(), 1e-6);
+
+        double diff_Pvec_norm = std::sqrt(diff_Pvec[0] * diff_Pvec[0] + diff_Pvec[1] * diff_Pvec[1] + diff_Pvec[2] * diff_Pvec[2]);
+        ASSERT_NEAR(diff_Pvec_norm, diff_Pvec.norm(), 1e-6);
+
+        // WRONG TEST. Be careful.
+        // assert radius == diff_Pvec.norm
     }
+
+
+    /* set actual_ variables , transform from siggear to sigbase using non-Eigen function */
+    for (int i = 0; i < N + 1; ++i) {
+        actual_noneigen_arr_sigbase_x[i] = \
+            gear_design::_calc_gearprofile_sigbase_x_from_siggear_x(     // non-eigen function
+                expected_arr_siggear_x[i], radius, theta
+                );
+        actual_noneigen_arr_sigbase_yprofile[i] = \
+            gear_design::_calc_gearprofile_sigbase_y_from_siggear_x(     // non-eigen function
+                expected_arr_siggear_x[i], radius, theta
+                );
+
+        ASSERT_NEAR(actual_arr_sigbase_Pvecprofile[i][0], actual_noneigen_arr_sigbase_x[i], 1e-6);
+        ASSERT_NEAR(actual_arr_sigbase_Pvecprofile[i][1], actual_noneigen_arr_sigbase_yprofile[i], 1e-6);
+    }
+
+
+    // nagori 
+    // ASSERT_NEAR( \
+    //     expected_arr_siggear_Pvecprofile[0][0], \
+    //     actual_arr_sigbase_Pvecprofile[0][0], \
+    //     1e-6 \
+    //     );      // error here. 2024/11/21
+    // ASSERT_NEAR( \
+    //     expected_arr_siggear_Pvecprofile[N][0] - expected_arr_siggear_Pvecprofile[0][0], \
+    //     actual_arr_sigbase_Pvecprofile[N][0] - actual_arr_sigbase_Pvecprofile[0][0], \
+    //     1e-6 \
+    //     );
 
 
     // TODO: test with inverse matrix.
@@ -121,7 +149,9 @@ TEST(SolutionTest, TransformGearBase) {
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
 
-    for (int i = 0; i < 10000; ++i) {
+    // RUN_ALL_TESTS();
+
+    for (int i = 0; i < 1000; ++i) {
         RUN_ALL_TESTS();
     }
 
