@@ -47,19 +47,20 @@ TEST(SolutionTest, TransformGearBase) {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<double> dis_radius(20., 30.);
-    std::uniform_real_distribution<double> \
-        dis_theta(0., M_PI);     // not recommended (codes need to be changed)
+    // std::uniform_real_distribution<double> \
+    //     dis_theta(0., M_PI);     // not recommended (codes need to be changed)
     std::uniform_real_distribution<double> \
         dis_phi(-1. * M_PI / 2., M_PI / 2.);  // recommended
-    // double radius = dis_radius(gen);
+    double radius = dis_radius(gen);
     // const double theta = dis_theta(gen);
-    // const double phi = dis_theta(gen);
+    const double phi = dis_phi(gen);
     const double N = 100.;  // the number of divisions on x-axis
     const double siggear_xrange[2] = {-20., 20.};  // plot range of x-axis
     const double siggear_x_diff = (siggear_xrange[1] - siggear_xrange[0]) / N;
+
     /* debug */
-    const double radius = 20.;
-    const double theta = M_PI / 3.;
+    // const double radius = 20.;
+    // const double theta = M_PI / 3.;
 
     /* declare expected_ & actual_ variables */
     std::vector<double> expected_arr_siggear_x(N + 1, 0.);
@@ -83,7 +84,7 @@ TEST(SolutionTest, TransformGearBase) {
                                                expected_arr_siggear_yprofile[i],
                                                1.;
     }
-    // check if xrange are set correctly
+    /* test if xrange are set correctly */
     ASSERT_NEAR(siggear_xrange[1] - siggear_xrange[0], expected_arr_siggear_x[N] - expected_arr_siggear_x[0], 1e-6);
 
     /* set actual_ variables , transform from siggear to sigbase using non-Eigen function */
@@ -93,37 +94,37 @@ TEST(SolutionTest, TransformGearBase) {
                 expected_arr_siggear_Pvecprofile[i],
                 actual_arr_sigbase_Pvecprofile[i],
                 radius,
-                theta
+                phi
             );
 
-        // TODO: test inverse transformation.
         actual_arr_siggear_Pvecprofile[i] = \
             gear_design::trans_Pvec_from_sigbase_to_siggear(    // Eigen function
                 actual_arr_sigbase_Pvecprofile[i],
                 actual_arr_siggear_Pvecprofile[i],
                 radius,
-                theta
+                phi
             );
-        /* test of transformation */
+        /* test transformation both direction */
         ASSERT_NEAR(expected_arr_siggear_Pvecprofile[i][0], actual_arr_siggear_Pvecprofile[i][0], 1e-6);    // error here 2024/11/21
+    }
 
-        // only for inside of this for-sentence
-        actual_noneigen_arr_sigbase_x[i] = \
+    /* Eigen usage test (not necessary) */
+    for (int j = 0; j < N; ++j) {
+        actual_noneigen_arr_sigbase_x[j] = \
             gear_design::_calc_gearprofile_sigbase_x_from_siggear_x(     // non-eigen function
-                expected_arr_siggear_x[i],
+                expected_arr_siggear_x[j],
                 radius,
-                theta
+                phi
             );
-        actual_noneigen_arr_sigbase_yprofile[i] = \
+        actual_noneigen_arr_sigbase_yprofile[j] = \
             gear_design::_calc_gearprofile_sigbase_y_from_siggear_x(     // non-eigen function
-                expected_arr_siggear_x[i],
+                expected_arr_siggear_x[j],
                 radius,
-                theta
+                phi
             );
 
-        /* test of correct Eigen usage */
-        ASSERT_NEAR(actual_arr_sigbase_Pvecprofile[i][0], actual_noneigen_arr_sigbase_x[i], 1e-6);
-        ASSERT_NEAR(actual_arr_sigbase_Pvecprofile[i][1], actual_noneigen_arr_sigbase_yprofile[i], 1e-6);
+        ASSERT_NEAR(actual_arr_sigbase_Pvecprofile[j][0], actual_noneigen_arr_sigbase_x[j], 1e-6);
+        ASSERT_NEAR(actual_arr_sigbase_Pvecprofile[j][1], actual_noneigen_arr_sigbase_yprofile[j], 1e-6);
     }
 
 }

@@ -44,12 +44,11 @@ double calc_sigbase_y_gear_from_xbase(
     Eigen::Vector3d* sigbase_vec = nullptr);
 
 
-
 /* IMPLEMENTATION */
 double _calc_gearprofile_sigbase_x_from_siggear_x(
     const double& siggear_x_param,
     const double& radius,
-    const double& theta)
+    const double& phi)
 {
     /*
     for cauculate x coordinate of f-gear which needs siggear_x_param for parameter.
@@ -70,10 +69,11 @@ double _calc_gearprofile_sigbase_x_from_siggear_x(
                            |   `.      / 
                            |      `.  v
                            |         '.
+    In this figure, phi is minus.
+    phi = theta - M_PI / 2
     
     */
 
-    double phi = theta - M_PI / 2.;
     double cos = std::cos(phi);
     double sin = std::sin(phi);
 
@@ -85,7 +85,7 @@ double _calc_gearprofile_sigbase_x_from_siggear_x(
 double _calc_gearprofile_sigbase_y_from_siggear_x(
     const double& siggear_f_gearprofile_x_param,
     const double& radius,
-    const double& theta)
+    const double& phi)
 {
     /*
     for cauculate y coordinate of f-gear which needs siggear_y_param as a parameter.
@@ -106,10 +106,11 @@ double _calc_gearprofile_sigbase_y_from_siggear_x(
                            |   `.      / 
                            |      `.  v
                            |         '.
-    
+    In this fugure, phi is minus.
+    phi = theta - M_PI / 2
+
     */
 
-    const double phi = theta - M_PI / 2.;
     const double cos = std::cos(phi);
     const double sin = std::sin(phi);
 
@@ -122,12 +123,15 @@ Eigen::Vector3d trans_Pvec_from_siggear_to_sigbase(
     const Eigen::Vector3d& siggear_gearprofile,     // input (siggear_x, siggear_y, 1)
     Eigen::Vector3d& sigbase_gearprofile,           // output 
     const double& radius,     // cutter radius
-    const double& theta)      // the angle between axis-siggear_y_coordinate relative to axis-sigbase_x_coordinate
+    // const double& theta)      // the angle between axis-siggear_y_coordinate relative to axis-sigbase_x_coordinate
+    const double& phi)
 {
     /*
     This function conducts only transformation.
     This function transforms vectors from siggear to sigbase.
-    
+    Counter-clockwise is its default rotation direction.
+    If phi > 0, It transforms counter-clockwise.
+
       sigbase_y_coordinate ^
                            |         ^ siggear_y_coordinate
                   ---------|  .     /
@@ -147,14 +151,21 @@ Eigen::Vector3d trans_Pvec_from_siggear_to_sigbase(
     
     phi: the angle between axis-siggear_y_coordinate relative to axis-sigbase_y_coordinate,
             with the axis-sigbase_y_coordinate as the reference.                               
+         In this figure, phi is minus. 
+         phi = theta - M_PI / 2
 
     using homogeneous transformation matrix, parallel move and then, apply rotation
-                        (cos(theta),    -sin(theta),    0)   (1    0   0)
-    sibbase_T_siggear = (sin(theta),    cos(theta),     0) * (0    1   r)
-                        (0,             0,              1)   (0    0   1)
-    */
+                        (cos(phi),    -sin(phi),    0)   (1    0   0)
+    sibbase_T_siggear = (sin(phi),    cos(phi),     0) * (0    1   r)
+                        (0,           0,            1)   (0    0   1)
+ 
+    Its inverse matrix, sigbase_T_siggear, is like below.
+                        (cos(phi),    sin(phi),     0)
+    siggear_T_sigbase = (-sin(phi),   cos(phi),    -r)
+                        (0,           0,            1)
+   */
 
-    const double phi = theta - M_PI / 2.;
+    // const double phi = theta - M_PI / 2.;
     const double cos = std::cos(phi);
     const double sin = std::sin(phi);
 
@@ -164,22 +175,15 @@ Eigen::Vector3d trans_Pvec_from_siggear_to_sigbase(
                          0.,        0.,         1.;
     
     sigbase_gearprofile = sigbase_T_siggear * siggear_gearprofile;
-
-    /* memo: inverse matrix of sigbase_T_siggear */
-    // Eigen::Matrix3d siggear_T_sigbase = Eigen::Matrix3d::Zero();
-    //     siggear_T_sigbase << cos,       sin,        0.,
-    //                          -1. * sin, cos,        -1. * radius,
-    //                          0.,        0.,         1.;
-
     return sigbase_gearprofile;
 }
 
-/* TODO: implement transformation function using inverse matrix of above funcion */
 Eigen::Vector3d trans_Pvec_from_sigbase_to_siggear(
     const Eigen::Vector3d& sigbase_gearprofile,
     Eigen::Vector3d& siggear_gearprofile,
     const double& radius,
-    const double& theta)
+    // const double& theta)
+    const double& phi)
 {
     /*
     inverse matrix of sigbase_T_siggear: 
@@ -190,17 +194,18 @@ Eigen::Vector3d trans_Pvec_from_sigbase_to_siggear(
                              0.,        0.,         1.;
     */
 
-    const double phi = theta - M_PI / 2.;
+    // const double phi = theta - M_PI / 2.;
     const double cos = std::cos(phi);
     const double sin = std::sin(phi);
  
     Eigen::Matrix3d siggear_T_sigbase = Eigen::Matrix3d::Zero();
     /* In this case, clockwise is default direction */
+    /* In other word, if phi > 0, it transforms to clockwise direction */
     siggear_T_sigbase << cos,        sin,    0.,
                          -1. * sin,  cos,    -1. * radius,
                          0.,         0.,     1.;
 
-    // /* phi > 0 */
+    /* normally, it should be this form considering direction of transformation */
     // siggear_T_sigbase << cos,   -1. * sin,  0.,
     //                      sin,   cos,        -1. * radius,
     //                      0.,    0.,         1.;
