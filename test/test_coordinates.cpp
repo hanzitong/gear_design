@@ -92,26 +92,11 @@ TEST(SolutionTest, TransformGearBase) {
                 radius,
                 theta);
 
-        // MATHEMATICALLY IMPOSSIBLE OPERATION. DON'T PLUS OR SUBTRACT VECTORS DEFINED IN DIFFERENT COORDINATES.
-        // Eigen::Vector3d diff_Pvec = actual_arr_sigbase_Pvecprofile[i] - expected_arr_siggear_Pvecprofile[i];
-
-        /* Eigen test */
-        double expected_diff_x_element = actual_arr_sigbase_Pvecprofile[i][0] - expected_arr_siggear_Pvecprofile[i][0];
-        double expected_diff_y_element = actual_arr_sigbase_Pvecprofile[i][1] - expected_arr_siggear_Pvecprofile[i][1];
-        double expected_diff_z_element = actual_arr_sigbase_Pvecprofile[i][2] - expected_arr_siggear_Pvecprofile[i][2];
-        ASSERT_NEAR(diff_Pvec[0], expected_diff_x_element, 1e-6);
-        ASSERT_NEAR(diff_Pvec[1], expected_diff_y_element, 1e-6);
-        ASSERT_NEAR(diff_Pvec[2], expected_diff_z_element, 1e-6);
-        double diff_Pvec_norm = std::sqrt(diff_Pvec[0] * diff_Pvec[0] + diff_Pvec[1] * diff_Pvec[1] + diff_Pvec[2] * diff_Pvec[2]);
-        ASSERT_NEAR(diff_Pvec_norm, diff_Pvec.norm(), 1e-6);
-
-        double diff_Pvec_norm = std::sqrt(diff_Pvec[0] * diff_Pvec[0] + diff_Pvec[1] * diff_Pvec[1] + diff_Pvec[2] * diff_Pvec[2]);
-        ASSERT_NEAR(diff_Pvec_norm, diff_Pvec.norm(), 1e-6);
-
         // WRONG TEST. Be careful.
-        // assert radius == diff_Pvec.norm
+            // MATHEMATICALLY IMPOSSIBLE OPERATION. DON'T PLUS OR SUBTRACT VECTORS DEFINED IN DIFFERENT COORDINATES.
+            // Eigen::Vector3d diff_Pvec = actual_arr_sigbase_Pvecprofile[i] - expected_arr_siggear_Pvecprofile[i];
+            // assert radius == diff_Pvec.norm
     }
-
 
     /* set actual_ variables , transform from siggear to sigbase using non-Eigen function */
     for (int i = 0; i < N + 1; ++i) {
