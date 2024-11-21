@@ -14,6 +14,28 @@
 namespace gear_design {
 
 /* PROTOTYPE DECRALATION */
+double _calc_gearprofile_sigbase_x_from_siggear_x(
+        const double& siggear_x_param,
+        const double& radius,
+        const double& theta
+    );
+
+double _calc_gearprofile_sigbase_y_siggear_x(
+        const double& siggear_f_gearprofile_x_param,
+        const double& radius,
+        const double& theta
+    );
+
+Eigen::Vector3d trans_Pvec_from_siggear_to_sigbase(
+        const Eigen::Vector3d& siggear_P,   // input
+        Eigen::Vector3d& sigbase_P,         // output
+        const double& radius,
+        const double& theta
+    );
+
+// Eigen::Vector3d trans_Pvec_from_siggear_to_silgbase(void);
+
+// USED FOR INTEGRAL
 // NAME SUGGESTION: calc_gearprofile_sigbase_y_gear_from_xbase
 double calc_sigbase_y_gear_from_xbase(
     const double& x_base,
@@ -21,32 +43,10 @@ double calc_sigbase_y_gear_from_xbase(
     const double& theta,
     Eigen::Vector3d* sigbase_vec = nullptr);
 
-// PREVIOUS NAME: double calc_sigbase_f_gearprofile_x_coordinate(
-double calc_gearprofile_sigbase_x_from_siggear_x(
-    const double& siggear_x_param,
-    const double& radius,
-    const double& theta);
-
-// PREVIOUS NAME: double calc_sigbase_f_gearprofile_y_coordinate(
-double calc_gearprofile_sigbase_y_siggear_x(
-    const double& siggear_f_gearprofile_x_param,
-    const double& radius,
-    const double& theta);
-
-// NAME SUGGESTION: calc_gearprofile_siggear_Pvec_from_sigbase_Pvec
-Eigen::Vector3d trans_siggear_to_sigbase(
-        const Eigen::Vector3d& siggear_P,   // input
-        Eigen::Vector3d& sigbase_P,         // output
-        const double& radius,
-        const double& theta
-    );
-
 
 
 /* IMPLEMENTATION */
-// NAME SUGGESTION: calc_gearprofile_sigbase_x_from_siggear_x
-// PREVIOUS NAME: double calc_sigbase_f_gearprofile_x_coordinate(
-double calc_gearprofile_sigbase_x_from_siggear_x(
+double _calc_gearprofile_sigbase_x_from_siggear_x(
     const double& siggear_x_param,
     const double& radius,
     const double& theta)
@@ -78,13 +78,11 @@ double calc_gearprofile_sigbase_x_from_siggear_x(
     double sin = std::sin(phi);
 
     // transform along siggear_y-axis and rotate
-    return siggear_x_param * cos - (radius + siggear_f_gearprofile(siggear_x_param)) * sin;
+    return siggear_x_param * cos - (radius + quad_calc_siggear_yprofile_from_siggear_x(siggear_x_param)) * sin;
 }
 
 
-// NAME SUGGESTION: calc_gearprofile_sigbase_y_from_siggear_x
-// PREVIOUS NAME: double calc_sigbase_f_gearprofile_y_coordinate(
-double calc_gearprofile_sigbase_y_from_siggear_x(
+double _calc_gearprofile_sigbase_y_from_siggear_x(
     const double& siggear_f_gearprofile_x_param,
     const double& radius,
     const double& theta)
@@ -116,13 +114,10 @@ double calc_gearprofile_sigbase_y_from_siggear_x(
     const double sin = std::sin(phi);
 
     // transform along siggear_y-axis and then rotate
-    return siggear_f_gearprofile_x_param * sin + (radius + siggear_f_gearprofile(siggear_f_gearprofile_x_param)) * cos;
+    return siggear_f_gearprofile_x_param * sin + (radius + quad_calc_siggear_yprofile_from_siggear_x(siggear_f_gearprofile_x_param)) * cos;
 }
 
 
-// NAME SUGGESTION: trans_from_sigbase_Pvec_to_sigbase_Pvec
-// NAME SUGGESTION: trans_Pvec_from_sigbase_to_sigbase
-// PREVIOUS NAME: Eigen::Vector3d trans_siggear_to_sigbase(
 Eigen::Vector3d trans_Pvec_from_siggear_to_sigbase(
     const Eigen::Vector3d& siggear_gearprofile,     // input (siggear_x, siggear_y, 1)
     Eigen::Vector3d& sigbase_gearprofile,           // output 
@@ -130,8 +125,8 @@ Eigen::Vector3d trans_Pvec_from_siggear_to_sigbase(
     const double& theta)      // the angle between axis-siggear_y_coordinate relative to axis-sigbase_x_coordinate
 {
     /*
-    this function transforms siggear_gearprofile to sigbase_gearprofile.
-    Actually, this function conducts only transformation.
+    This function conducts only transformation.
+    This function transforms vectors from siggear to sigbase.
     
       sigbase_y_coordinate ^
                            |         ^ siggear_y_coordinate
@@ -160,8 +155,6 @@ Eigen::Vector3d trans_Pvec_from_siggear_to_sigbase(
     */
 
     const double phi = theta - M_PI / 2.;
-
-    /* cache */
     const double cos = std::cos(phi);
     const double sin = std::sin(phi);
 
@@ -181,11 +174,41 @@ Eigen::Vector3d trans_Pvec_from_siggear_to_sigbase(
     return sigbase_gearprofile;
 }
 
-
-// NAME SUGGESTION: trans_from_sigbase_Pvec_to_sigbase_Pvec
 /* TODO: implement transformation function using inverse matrix of above funcion */
-// Eigen::Vector3d trans_sigbase_to_siggear(){}
+Eigen::Vector3d trans_Pvec_from_sigbase_to_siggear(
+    const Eigen::Vector3d& sigbase_gearprofile,
+    Eigen::Vector3d& siggear_gearprofile,
+    const double& radius,
+    const double& theta)
+{
+    /*
+    inverse matrix of sigbase_T_siggear: 
 
+    Eigen::Matrix3d siggear_T_sigbase = Eigen::Matrix3d::Zero();
+        siggear_T_sigbase << cos,       sin,        0.,
+                             -1. * sin, cos,        -1. * radius,
+                             0.,        0.,         1.;
+    */
+
+    const double phi = theta - M_PI / 2.;
+    const double cos = std::cos(phi);
+    const double sin = std::sin(phi);
+ 
+    Eigen::Matrix3d siggear_T_sigbase = Eigen::Matrix3d::Zero();
+    /* In this case, clockwise is default direction */
+    siggear_T_sigbase << cos,        sin,    0.,
+                         -1. * sin,  cos,    -1. * radius,
+                         0.,         0.,     1.;
+
+    // /* phi > 0 */
+    // siggear_T_sigbase << cos,   -1. * sin,  0.,
+    //                      sin,   cos,        -1. * radius,
+    //                      0.,    0.,         1.;
+
+    siggear_gearprofile = siggear_T_sigbase * sigbase_gearprofile;
+    
+    return siggear_gearprofile;
+}
 
 
 // NAME SUGGESTION: calc_gearprofile
@@ -260,7 +283,7 @@ double calc_gearprofile_sigbase_y_from_sigbase_x(
 
     /* WAY1: output y_base (use equation 2 in paper) */
     double y_base = \
-        x_gear * sin - gear_design::siggear_f_gearprofile(x_gear) * cos - radius * cos;
+        x_gear * sin - gear_design::quad_calc_siggear_yprofile_from_siggear_x(x_gear) * cos - radius * cos;
     /* WAY2: output y_base (use trans_sigbase_y_gear_from_xbase()) */
     // TODO: to implement WAY2
 

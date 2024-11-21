@@ -19,7 +19,9 @@ EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(Eigen::Vector3d)
 
 TEST(SolutionTest, TransformGearBase) {
     /*
-    NAME CONVENTION:
+    below is now not true information....
+
+    NAME CONVENTION:  
     the word "gearprofile" stands for "y-coordinate" at the coordinate.
 
     This code tests the following operations.
@@ -81,53 +83,49 @@ TEST(SolutionTest, TransformGearBase) {
                                                expected_arr_siggear_yprofile[i],
                                                1.;
     }
+    // check if xrange are set correctly
     ASSERT_NEAR(siggear_xrange[1] - siggear_xrange[0], expected_arr_siggear_x[N] - expected_arr_siggear_x[0], 1e-6);
 
-    /* set actual_ variables , transform from siggear to sigbase using Eigen function */
+    /* set actual_ variables , transform from siggear to sigbase using non-Eigen function */
     for (int i = 0; i < N + 1; ++i) {
         actual_arr_sigbase_Pvecprofile[i] = \
             gear_design::trans_Pvec_from_siggear_to_sigbase(    // Eigen function
                 expected_arr_siggear_Pvecprofile[i],
                 actual_arr_sigbase_Pvecprofile[i],
                 radius,
-                theta);
+                theta
+            );
 
-        // WRONG TEST. Be careful.
-            // MATHEMATICALLY IMPOSSIBLE OPERATION. DON'T PLUS OR SUBTRACT VECTORS DEFINED IN DIFFERENT COORDINATES.
-            // Eigen::Vector3d diff_Pvec = actual_arr_sigbase_Pvecprofile[i] - expected_arr_siggear_Pvecprofile[i];
-            // assert radius == diff_Pvec.norm
-    }
+        // TODO: test inverse transformation.
+        actual_arr_siggear_Pvecprofile[i] = \
+            gear_design::trans_Pvec_from_sigbase_to_siggear(    // Eigen function
+                actual_arr_sigbase_Pvecprofile[i],
+                actual_arr_siggear_Pvecprofile[i],
+                radius,
+                theta
+            );
+        /* test of transformation */
+        ASSERT_NEAR(expected_arr_siggear_Pvecprofile[i][0], actual_arr_siggear_Pvecprofile[i][0], 1e-6);    // error here 2024/11/21
 
-    /* set actual_ variables , transform from siggear to sigbase using non-Eigen function */
-    for (int i = 0; i < N + 1; ++i) {
+        // only for inside of this for-sentence
         actual_noneigen_arr_sigbase_x[i] = \
             gear_design::_calc_gearprofile_sigbase_x_from_siggear_x(     // non-eigen function
-                expected_arr_siggear_x[i], radius, theta
-                );
+                expected_arr_siggear_x[i],
+                radius,
+                theta
+            );
         actual_noneigen_arr_sigbase_yprofile[i] = \
             gear_design::_calc_gearprofile_sigbase_y_from_siggear_x(     // non-eigen function
-                expected_arr_siggear_x[i], radius, theta
-                );
+                expected_arr_siggear_x[i],
+                radius,
+                theta
+            );
 
+        /* test of correct Eigen usage */
         ASSERT_NEAR(actual_arr_sigbase_Pvecprofile[i][0], actual_noneigen_arr_sigbase_x[i], 1e-6);
         ASSERT_NEAR(actual_arr_sigbase_Pvecprofile[i][1], actual_noneigen_arr_sigbase_yprofile[i], 1e-6);
     }
 
-
-    // nagori 
-    // ASSERT_NEAR( \
-    //     expected_arr_siggear_Pvecprofile[0][0], \
-    //     actual_arr_sigbase_Pvecprofile[0][0], \
-    //     1e-6 \
-    //     );      // error here. 2024/11/21
-    // ASSERT_NEAR( \
-    //     expected_arr_siggear_Pvecprofile[N][0] - expected_arr_siggear_Pvecprofile[0][0], \
-    //     actual_arr_sigbase_Pvecprofile[N][0] - actual_arr_sigbase_Pvecprofile[0][0], \
-    //     1e-6 \
-    //     );
-
-
-    // TODO: test with inverse matrix.
 }
 
 
