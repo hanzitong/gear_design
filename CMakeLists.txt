@@ -19,32 +19,33 @@ find_package(Eigen3 REQUIRED)
 
 ## ============== BUILD A CODE ==============
 
-add_executable(main
-  example/main.cpp
-)
-target_include_directories(main PRIVATE
-  ${PROJECT_SOURCE_DIR}/include
-  ${EIGEN3_INCLUDE_DIRS}
-  ${Boost_INCLUDE_DIRS}
-)
-target_link_libraries(main PRIVATE
-  nlopt
-)
+# add_executable(main
+#   example/main.cpp
+# )
+# target_include_directories(main PRIVATE
+#   ${PROJECT_SOURCE_DIR}/include
+#   ${EIGEN3_INCLUDE_DIRS}
+#   ${Boost_INCLUDE_DIRS}
+# )
+# target_link_libraries(main PRIVATE
+#   nlopt
+# )
 
 ## ============== BUILD A TEST CODE ==============
 
-add_executable(test_coordinates 
+# add_executable(test_coordinates 
+add_executable(test_code 
     test/test_coordinates.cpp
 )
-target_include_directories(test_coordinates PRIVATE
+target_include_directories(test_code PRIVATE
   ${PROJECT_SOURCE_DIR}/include
   ${EIGEN3_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
 )
-target_link_libraries(test_coordinates PRIVATE
-  Eigen3::Eigen
+target_link_libraries(test_code PRIVATE
   gtest
   pthread
+  nlopt
 )
 
 # target_include_directories(gear_design PUBLIC
