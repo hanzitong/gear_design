@@ -35,7 +35,8 @@ find_package(Eigen3 REQUIRED)
 
 # add_executable(test_coordinates 
 add_executable(test_code 
-    test/test_coordinates.cpp
+    # test/test_coordinates.cpp
+    test/test_coordinates_optimization.cpp
 )
 target_include_directories(test_code PRIVATE
   ${PROJECT_SOURCE_DIR}/include

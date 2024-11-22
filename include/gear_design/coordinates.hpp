@@ -4,11 +4,13 @@
 #define GEAR_DESIGN_COORDINATES_HPP
 
 #include <iostream>
-#include <cmath>
 #include <vector>
-#include <cassert>
+#include <cmath>
 #include <Eigen/Core>
 #include <nlopt.hpp>
+
+#include <cassert>
+
 #include "gear_design/objfunctions.hpp"     // Be careful of circular reference !!
 
 namespace gear_design {
@@ -17,20 +19,20 @@ namespace gear_design {
 double _calc_gearprofile_sigbase_x_from_siggear_x(
         const double& siggear_x_param,
         const double& radius,
-        const double& theta
+        const double& phi
     );
 
 double _calc_gearprofile_sigbase_y_siggear_x(
         const double& siggear_f_gearprofile_x_param,
         const double& radius,
-        const double& theta
+        const double& phi
     );
 
 Eigen::Vector3d trans_Pvec_from_siggear_to_sigbase(
         const Eigen::Vector3d& siggear_P,   // input
         Eigen::Vector3d& sigbase_P,         // output
         const double& radius,
-        const double& theta
+        const double& phi
     );
 
 // Eigen::Vector3d trans_Pvec_from_siggear_to_silgbase(void);
@@ -40,7 +42,7 @@ Eigen::Vector3d trans_Pvec_from_siggear_to_sigbase(
 double calc_sigbase_y_gear_from_xbase(
     const double& x_base,
     const double& radius,
-    const double& theta,
+    const double& phi,
     Eigen::Vector3d* sigbase_vec = nullptr);
 
 
@@ -123,7 +125,6 @@ Eigen::Vector3d trans_Pvec_from_siggear_to_sigbase(
     const Eigen::Vector3d& siggear_gearprofile,     // input (siggear_x, siggear_y, 1)
     Eigen::Vector3d& sigbase_gearprofile,           // output 
     const double& radius,     // cutter radius
-    // const double& theta)      // the angle between axis-siggear_y_coordinate relative to axis-sigbase_x_coordinate
     const double& phi)
 {
     /*
@@ -148,6 +149,7 @@ Eigen::Vector3d trans_Pvec_from_siggear_to_sigbase(
                            |   `.      / 
                            |      `.  v
                            |         '.
+    theta: the angle between axis-siggear_y_coordinate relative to axis-sigbase_x_coordinate
     
     phi: the angle between axis-siggear_y_coordinate relative to axis-sigbase_y_coordinate,
             with the axis-sigbase_y_coordinate as the reference.                               
@@ -165,7 +167,6 @@ Eigen::Vector3d trans_Pvec_from_siggear_to_sigbase(
                         (0,           0,            1)
    */
 
-    // const double phi = theta - M_PI / 2.;
     const double cos = std::cos(phi);
     const double sin = std::sin(phi);
 
@@ -216,26 +217,23 @@ Eigen::Vector3d trans_Pvec_from_sigbase_to_siggear(
 }
 
 
-// NAME SUGGESTION: calc_gearprofile
-// PREVOUS NAME: double calc_sigbase_y_gear_from_xbase(
-// double calc_sigbase_y_gear_from_xbase(
-double calc_gearprofile_sigbase_y_from_sigbase_x(
-    const double& x_base,
+// not finish  2024/11/21
+// 1 time optimization
+double calc_sigbase_yprofile_from_sigbase_x(
+    const double& sigbase_x,
     const double& radius,
-    const double& theta,
-    Eigen::Vector3d* sigbase_vec)   // optional argument (for test)
+    const double& phi,
+    Eigen::Vector3d* sigbase_Pvec)   // optional argument (for test)
 {
     /*
-    STEP1: numerically calculate x_gear from equation1 below.
-    STEP2: calculate y_base from 2 ways.
-            WAY1: use equation2 below.
-            WAY2: transform from siggear to sigbase.
+    1. solve equation 1 numerically. x_base is known. x_gear is variable.
+    2. solve equation 2 explicitly. x_gear is known. y_base is variable.
 
     Vec: pointing a coordinate on f_gear_profile.
-    R:   homegenous transformation matrix.
+    T:   homegenous transformation matrix.
 
     0 = sigbase_Vec - siggear_Vec
-    0 = sigbase_Vec - sigbase_R_siggear * siggear_Vec
+    0 = sigbase_Vec - sigbase_T_siggear * siggear_Vec
 
     (0.)   (x_base)   (cos(theta), -sin(theta), -r * sin(theta))   (x_gear)
     (0.) = (y_base) - (sin(theta), cos(theta),  r * cos(theta) ) * (y_gear)
@@ -247,62 +245,63 @@ double calc_gearprofile_sigbase_y_from_sigbase_x(
 
     0. = x_base - x_gear * cos + y_gear * sin + r * sin      (equation 1)
     0. = y_base - x_gear * sin - y_gear * cos - r * cos      (equation 2)
+
     */
 
-    // STEP1: calc Xgear from Xbase using equation1
-    /* prepare optimization materials */
-    std::vector<double> opt_variable(1, 50.);
-    double val_objfunc = 0.;
-    GearParamFgear param(radius, theta, x_base);
-    nlopt::opt calc_y_base = nlopt::opt(nlopt::LN_COBYLA, 1);
-    calc_y_base.set_min_objective(obj_calc_siggear_x_from_xbase, (void*)&param);
-    calc_y_base.set_stopval(1e-6);
+    /* nlopt materials */
+    nlopt::opt optimizer_siggear_x = nlopt::opt(nlopt::LN_COBYLA, 1); // (algorithm, variable_num)
+    double output_objfunc = 0.;
+    double init_value = std::nan("init_value is not set");
+    gear_design::ConditionParam condition(radius, phi, sigbase_x);
+    optimizer_siggear_x.set_min_objective(_obj_calc_siggear_x_from_sigbase_x, (void*)&condition);
+    optimizer_siggear_x.set_stopval(1e-6);
 
-    /* To set lower or upper bounds, check the value of theta */
-    if (0. < theta && theta < M_PI / 2.) {
-        // std::vector<double> ub(1, 0.);
-        // calc_y_base.set_upper_bounds(ub);
-        // calc_y_base.set_upper_bounds(std::vector<double>(1, radius));   // correct ???????. is't in another function???
-    } else if (M_PI / 2. < theta && theta < M_PI) {
-        // std::vector<double> lb(1, 0.);
-        // calc_y_base.set_lower_bounds(lb);
-        // calc_y_base.set_lower_bounds(std::vector<double>(1, 0.));
-    } else if (theta == M_PI / 2.) {
-        // do nothing
+    double siggear_yprofile_phi0vertex = gear_design::quad_calc_siggear_yprofile_from_siggear_x(sigbase_x);
+
+    // only case for upper_sigbase_yprofile
+    // if (WHERE == "upper")
+    if (phi == 0.) {
+        return siggear_yprofile_phi0vertex + radius; // equal to sigbase_yprofile
+    } else if (0. < phi && phi < M_PI / 2.) {
+        std::vector<double> lb_siggear_x(1, 0.);
+        optimizer_siggear_x.set_lower_bounds(lb_siggear_x);
+        init_value = 0.01;
+    } else if (-1. * M_PI / 2. < phi && phi < 0.) {
+        std::vector<double> ub_siggear_x(1, 0.);
+        optimizer_siggear_x.set_upper_bounds(ub_siggear_x);
+        init_value = -0.01;
     } else {
-        return std::nan("in calc_sigbase_y_gear_from_xgear(), out of theta range");
+        return std::nan("calc_sigbase_yprofile_from_sigbase_x");
     }
 
-    /* calculate x_gear */
-    calc_y_base.optimize(opt_variable, val_objfunc);
-    assert(std::abs(val_objfunc) <= 1e-6);      // nearly equal
-    assert(false);
-    assert(true);
-    double x_gear = opt_variable[0];
-    
+    /* calculate(optimize) x_gear with nlopt */
+    if (init_value == std::nan("")) std::cout << "nan" << std::endl;
+    std::vector<double> optimization_variable(1, init_value);
+    optimizer_siggear_x.optimize(optimization_variable, output_objfunc);
+    // assert(std::abs(output_objfunc) <= 1e-6);      // nearly equal
+    // assert(true);
+    double optimal_siggear_x = optimization_variable[0];
 
-    // STEP2
-    /* cache */
-    double sin = std::sin(theta);
-    double cos = std::cos(theta);
+    /* calculate sigbase_y by substituting optimal_siggear_x to equation 2 */
+    double sin = std::sin(phi);
+    double cos = std::cos(phi);
 
-    /* WAY1: output y_base (use equation 2 in paper) */
-    double y_base = \
-        x_gear * sin - gear_design::quad_calc_siggear_yprofile_from_siggear_x(x_gear) * cos - radius * cos;
-    /* WAY2: output y_base (use trans_sigbase_y_gear_from_xbase()) */
-    // TODO: to implement WAY2
-
-
+    // nan here !!!!!!!!!!!!!!! 2024/11/21
+    double optilmal_sigbase_y = \
+        optimal_siggear_x * sin \
+        - gear_design::quad_calc_siggear_yprofile_from_siggear_x(optimal_siggear_x) \
+        * cos - radius * cos;
 
     /* for test case */
-    if (sigbase_vec) {      // if sigbase_vec is given
-        (*sigbase_vec)[0] = x_base;
-        (*sigbase_vec)[1] = y_base;
-        (*sigbase_vec)[2] = 1.;
+    if (sigbase_Pvec) {      // If sigbase_vec is given, it means ture.
+        (*sigbase_Pvec)[0] = sigbase_x;
+        (*sigbase_Pvec)[1] = optilmal_sigbase_y;
+        // (*sigbase_Pvec)[2] = 1.;
+        (*sigbase_Pvec)[2] = optimal_siggear_x; // for test case
     }
 
 
-    return y_base;
+    return optilmal_sigbase_y;
 }
 
 

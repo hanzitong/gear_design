@@ -4,18 +4,19 @@
 #include <cmath>
 #include <gtest/gtest.h>
 
-#include <Eigen/Core>       // To include it, set /usr/include/eigen3 to include-PATH (g++ -I/usr/include/eigen3).
+// To include Eigen, set /usr/include/eigen3 to include-PATH (g++ -I/usr/include/eigen3).
+#include <Eigen/Core>
 #include <Eigen/StdVector>
 EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(Eigen::Vector3d)
 
 #include "../include/gear_design/coordinates.hpp"
 
 
-/*---------------------------------------------
+/*----------------------------------------------------------------------
     naming convention
-    * _expected: the value it is expected to be. it is difenitly ture.
-    * _actual: the calculated actual value. it could be false value.
-----------------------------------------------*/
+    * expected_: the value it is expected to be. it is difenitly ture.
+    * actual_: the calculated actual value. it could be false value.
+-----------------------------------------------------------------------*/
 
 TEST(SolutionTest, TransformGearBase) {
     /*
@@ -43,24 +44,21 @@ TEST(SolutionTest, TransformGearBase) {
        This confirms inverse transformation.
     */
 
-    /* set basic parameters of the situation */
+    /* random test condition */
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<double> dis_radius(20., 30.);
-    // std::uniform_real_distribution<double> \
-    //     dis_theta(0., M_PI);     // not recommended (codes need to be changed)
     std::uniform_real_distribution<double> \
-        dis_phi(-1. * M_PI / 2., M_PI / 2.);  // recommended
+        dis_phi(-1. * M_PI / 2., M_PI / 2.);    // using theta isn't recommended
     double radius = dis_radius(gen);
-    // const double theta = dis_theta(gen);
     const double phi = dis_phi(gen);
     const double N = 100.;  // the number of divisions on x-axis
     const double siggear_xrange[2] = {-20., 20.};  // plot range of x-axis
     const double siggear_x_diff = (siggear_xrange[1] - siggear_xrange[0]) / N;
 
-    /* debug */
+    /* fixed test condition */
     // const double radius = 20.;
-    // const double theta = M_PI / 3.;
+    // const double phi = M_PI / 3.;
 
     /* declare expected_ & actual_ variables */
     std::vector<double> expected_arr_siggear_x(N + 1, 0.);
