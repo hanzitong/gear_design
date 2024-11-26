@@ -1,8 +1,0 @@
-
-g++ gendata_multi_sigbase_fgear_profile.cpp ../../src/f_gear.cpp -I/usr/include/eigen3
-
-
-
-
-
-
