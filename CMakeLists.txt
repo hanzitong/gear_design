@@ -6,9 +6,9 @@ project(gear_design)
 #   set (CMAKE_BUILD_TYPE Debug CACHE STRING "comment: Build type (Debug/Release)" FORCE)
 # endif()
 
-if (NOT CMAKE_BUILD_TYPE)
-  set (CMAKE_BUILD_TYPE Release CACHE STRING "comment: Build type (Debug/Release)" FORCE)
-endif()
+# if (NOT CMAKE_BUILD_TYPE)
+#   set (CMAKE_BUILD_TYPE Release CACHE STRING "comment: Build type (Debug/Release)" FORCE)
+# endif()
 
 message("CMAKE_BUILD_TYPE is set to ${CMAKE_BUILD_TYPE}")
 
@@ -29,17 +29,17 @@ find_package(Eigen3 REQUIRED)
 
 ## ============== BUILD A MINI-CODE ==============
 
-add_executable(main 
-  example/mini_main.cpp
-)
-target_include_directories(main PRIVATE
-  ${PROJECT_SOURCE_DIR}/include
-  ${EIGEN3_INCLUDE_DIRS}
-  ${Boost_INCLUDE_DIRS}
-)
-target_link_libraries(main PRIVATE
-  nlopt
-)
+# add_executable(main 
+#   example/mini_main.cpp
+# )
+# target_include_directories(main PRIVATE
+#   ${PROJECT_SOURCE_DIR}/include
+#   ${EIGEN3_INCLUDE_DIRS}
+#   ${Boost_INCLUDE_DIRS}
+# )
+# target_link_libraries(main PRIVATE
+#   nlopt
+# )
 
 ## ============== BUILD A TEST-CODE ==============
 
@@ -61,18 +61,16 @@ target_link_libraries(test_code PRIVATE
 
 ## ========== BUILD PLOT-DATUM-GENERATERS ==============
 
-
-add_executable(gendata
-  plot/objfunc_shape/src/gendata_objfunc_shape.cpp
-)
-target_include_directories(
-  ${PROJECT_SOURCE_DIR}/include
-  ${EIGEN3_INCLUDE_DIRS}
-)
-target_link_libraries(
-  nlopt
-)
-
+# add_executable(gendata
+#   plot/objfunc_shape/src/gendata_objfunc_shape.cpp
+# )
+# target_include_directories(gendata PRIVATE
+#   ${PROJECT_SOURCE_DIR}/include
+#   ${EIGEN3_INCLUDE_DIRS}
+# )
+# target_link_libraries(gendata PRIVATE
+#   nlopt
+# )
 
 
 ## ============== BUILD AS A LIBRARY ==============
@@ -96,7 +94,8 @@ target_link_libraries(
 #   $<INSTALL_INTERFACE:include>
 # )
 
-# ==============
+
+## ============== memo ===============
 
 ## this is old method
 # include_directories(
