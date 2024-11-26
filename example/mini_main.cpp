@@ -2,22 +2,24 @@
 
 #include <iostream>
 #include <cmath>
-#include <gear_design/coordinates.hpp>
+#include <cassert>
+// #include "../include/gear_design/coordinates.hpp"
+// #include "../include/gear_design/objfunctions.hpp"
+#include "gear_design/coordinates.hpp"
+#include "gear_design/objfunctions.hpp"
 
 
 int main(const int argc, const char* argv[]) {
-    double radius = 5.;
-    double theta = 30 / 180 * M_PI;
-    double x_gear = 0.;
-    double y_gear = gear_design::siggear_f_gearprofile(x_gear);
-    double siggear_x = 1.;
-    // double sigbase_y = gear_design::calc_sigbase_y_gear_from_xbase(siggear_x, radius, theta);
-    double sigbase_y = y_gear;
+    /* fixed condition */
+    double sigbase_x = 0.;
+    double radius = 50.;
+    double phi = -30. / 180. * M_PI;
 
-    // double y = gear_design::calc_sig0y_quadratic(2., &chank);
-    // double y = gear_design::calc_sig0y_quadratic(0., &chank);
+    double sigbase_y = \
+        gear_design::calc_sigbase_yprofile_from_sigbase_x(sigbase_y, radius, phi, nullptr);
 
-    std::cout << sigbase_y << std::endl;
+
+    std::cerr << sigbase_y << std::endl;
 
 
     return 0;

@@ -22,11 +22,6 @@
     I need to conduct numerical analysis 2 times
 */
 
-// STEP1: numerically calculate x_gear from equation1 below.
-// STEP2: calculate y_base from 2 ways.
-//         WAY1: use equation2 below.
-//         WAY2: transform from siggear to sigbase.
-
 TEST(SolutionTest, OnFunction) {
 
     /* random condition */
@@ -40,8 +35,8 @@ TEST(SolutionTest, OnFunction) {
     // double x_base = dis_xbase(gen);
 
     /* fixed condition */
-    double radius = 50;
-    double phi = -30;   // equal to theta=60
+    double radius = 25.; // [mm]
+    double phi = 30. / 180. * M_PI;   // [rad]. equal to theta=60rad
     double expected_siggear_x = -2.;
 
     /* declare expected_ & actual_ variables */
@@ -51,8 +46,8 @@ TEST(SolutionTest, OnFunction) {
 
     /* set expected_ */
     expected_siggear_Pvec << expected_siggear_x,
-                                   gear_design::quad_calc_siggear_yprofile_from_siggear_x(expected_siggear_x),
-                                   1.;
+                             gear_design::quad_calc_siggear_yprofile_from_siggear_x(expected_siggear_x),
+                             1.;
     expected_sigbase_Pvec = \
         gear_design::trans_Pvec_from_siggear_to_sigbase(  // this function already passed another test
             expected_siggear_Pvec,
@@ -75,7 +70,7 @@ TEST(SolutionTest, OnFunction) {
 
     /* assert sigbase_yprofile with 2-way calculation */
     // ASSERT_NEAR(expected_siggear_x, actual_sigbase_Pvec[2], 1e-6);    // siggear_x
-    // ASSERT_NEAR(expected_sigbase_Pvec[0], actual_sigbase_Pvec[0], 1e-6);
+    ASSERT_NEAR(expected_sigbase_Pvec[0], actual_sigbase_Pvec[0], 1e-6);
     // ASSERT_NEAR(expected_sigbase_Pvec[1], actual_sigbase_Pvec[1], 1e-6);
     ASSERT_NEAR(expected_sigbase_Pvec[1], actual_sigbase_yprofile, 1e-6);
 
