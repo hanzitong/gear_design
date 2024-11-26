@@ -26,14 +26,13 @@ struct ConditionParam {
 
 
 /* Prototype Declaration */
-double quad_calc_siggear_yprofile_from_siggear_x(const double& siggear_x);
+// double quad_calc_siggear_yprofile_from_siggear_x(const double& siggear_x);
 // double real_calc_siggear_yprofile_from_sigger_x(const double& siggear_x);   // define it in future
 
 
 
 
 /* Implementation */
-// PREVIOUS NAME: siggear_f_gearprofile(const double& x)
 double quad_calc_siggear_yprofile_from_siggear_x(const double& siggear_x)
 {
     /*
