@@ -6,16 +6,16 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <cassert>
+
 #include <Eigen/Core>
 #include <nlopt.hpp>
-
-#include <cassert>
 
 #include "gear_design/objfunctions.hpp"     // Be careful of circular reference !!
 
 namespace gear_design {
 
-/* ===== PROTOTYPE DECRALATION ===== */
+/* ========== PROTOTYPE DECRALATION ========== */
 double _calc_gearprofile_sigbase_x_from_siggear_x(
         const double& siggear_x_param,
         const double& radius,
@@ -42,21 +42,25 @@ Eigen::Vector3d trans_Pvec_from_sigbase_to_siggear(
         const double& phi
     );
 
-double calc_sigbase_yprofile_from_sigbase_x(
-        const double& x_base,
-        const double& radius,
-        const double& phi,
-        Eigen::Vector3d* sigbase_vec = nullptr  // for test
-    );
 /* objective function of calc_sigbase_yprofile_from_sigbase_x */
 double _obj_calc_siggear_x_from_sigbase_x(
                                      const std::vector<double>& opt_vec,
                                      std::vector<double>& grad,
                                      void* f_data
                                     );
+double calc_sigbase_yprofile_from_sigbase_x(
+        const double& x_base,
+        const double& radius,
+        const double& phi,
+        Eigen::Vector3d* sigbase_vec = nullptr  // for test
+    );
 
 
-/* ====== IMPLEMENTATION ===== */
+
+
+
+
+/* =========== IMPLEMENTATION ========== */
 double _calc_gearprofile_sigbase_x_from_siggear_x(
     const double& siggear_x_param,
     const double& radius,
@@ -138,8 +142,9 @@ Eigen::Vector3d trans_Pvec_from_siggear_to_sigbase(
     /*
     This function conducts only transformation.
     This function transforms vectors from siggear to sigbase.
-    Counter-clockwise is its default rotation direction.
-    If phi > 0, It transforms counter-clockwise.
+    COUNTER-CLOCKWISE is its default rotation direction !!
+
+    If phi > 0 means counter-clockwise, so it transforms counter-clockwise.
 
       sigbase_y_coordinate ^
                            |         ^ siggear_y_coordinate
@@ -195,6 +200,7 @@ Eigen::Vector3d trans_Pvec_from_sigbase_to_siggear(
 {
     /*
     inverse matrix of sigbase_T_siggear: 
+    CLOCKWISE is its default rotational direction !!
 
     Eigen::Matrix3d siggear_T_sigbase = Eigen::Matrix3d::Zero();
         siggear_T_sigbase << cos,       sin,        0.,
@@ -223,8 +229,35 @@ Eigen::Vector3d trans_Pvec_from_sigbase_to_siggear(
     return siggear_gearprofile;
 }
 
+/* objective function of calc_sigbase_yprofile_from_sigbase_x */
+double _obj_calc_siggear_x_from_sigbase_x(
+                                     const std::vector<double>& opt_vec,
+                                     std::vector<double>& grad,
+                                     void* param_data
+                                    )
+{
+    /* cast parameters from input structs (nlopt manner) */
+    gear_design::ConditionParam* params = \
+        static_cast<gear_design::ConditionParam*>(param_data);
 
-// not finish  2024/11/21
+    /* rename & cache */
+    double radius = params -> radius;
+    double phi = params -> phi;
+    double cos = std::cos(phi);
+    double sin = std::sin(phi);
+    double sigbase_x = params -> x_base;   // input
+    double siggear_x = opt_vec[0];         // variable to optimize
+
+    double siggear_y = quad_calc_siggear_yprofile_from_siggear_x(siggear_x);
+    /* objective function for calculating x_gear */
+    double res = sigbase_x - siggear_x * cos + siggear_y * sin + radius * sin;   // equaton 1 in paper
+
+
+    // return res;         // for using root finding algorithm
+    return res * res;   // for using optimization algorithm
+}
+
+// it hasn't passed unit-test yet. 2024/11/26
 double calc_sigbase_yprofile_from_sigbase_x(
     const double& sigbase_x,
     const double& radius,
@@ -269,27 +302,27 @@ double calc_sigbase_yprofile_from_sigbase_x(
         std::vector<double> lb_siggear_x(1, 0.);
         optimizer_siggear_x.set_lower_bounds(lb_siggear_x);
         // init_value = 0.01;
-        init_value = 0.;
+        init_value = 5.;
     } else if (-1. * M_PI / 2. < phi && phi < 0.) {
         std::vector<double> ub_siggear_x(1, 0.);
         optimizer_siggear_x.set_upper_bounds(ub_siggear_x);
         // init_value = -0.01;
-        init_value = 0.;
+        init_value = -5.;
     } else {
         std::cerr << "===== no condition =====" << std::endl;
         return std::nan("calc_sigbase_yprofile_from_sigbase_x");
     }
 
-    // std::cerr << "here here!!!!!!!!!!!!!!";
-    // std::cerr << init_value;
-
-    /* calculate(optimize) x_gear with nlopt */
+    /* calculate(optimize) x_gear */
     if (init_value == std::nan("")) std::cerr << "here is nan" << std::endl;
     std::vector<double> optimization_variable(1, init_value);
     optimizer_siggear_x.optimize(optimization_variable, output_objfunc);
     double optimal_siggear_x = optimization_variable[0];
+    double last_objf_value = optimizer_siggear_x.last_optimum_value();
 
-    std::cerr << " ============" << optimal_siggear_x;
+    assert(std::abs(last_objf_value) < 1e-6);
+    std::cerr << " ==pass==========" << optimal_siggear_x;
+
 
     /* calculate sigbase_y by substituting optimal_siggear_x to equation 2 */
     double sin = std::sin(phi);
@@ -311,34 +344,6 @@ double calc_sigbase_yprofile_from_sigbase_x(
 
     return optimal_sigbase_y;
 }
-
-/* objective function of calc_sigbase_yprofile_from_sigbase_x */
-double _obj_calc_siggear_x_from_sigbase_x(
-                                     const std::vector<double>& opt_vec,
-                                     std::vector<double>& grad,
-                                     void* f_data
-                                    )
-{
-    /* cast parameters from input structs (nlopt manner) */
-    gear_design::ConditionParam* params = static_cast<gear_design::ConditionParam*>(f_data);
-
-    /* rename & cache */
-    double radius = params -> radius;
-    double phi = params -> phi;
-    double cos = std::cos(phi);
-    double sin = std::sin(phi);
-    double sigbase_x = params -> x_base;   // input
-    double siggear_x = opt_vec[0];         // variable to optimize
-
-    double siggear_y = quad_calc_siggear_yprofile_from_siggear_x(siggear_x);
-    /* objective function for calculating x_gear */
-    double res = sigbase_x - siggear_x * cos + siggear_y * sin + radius * sin;   // equaton 1 in paper
-
-
-    // return res;         // for using root finding algorithm
-    return res * res;   // for using optimization algorithm
-}
-
 
 }       // namespace gear_design
 

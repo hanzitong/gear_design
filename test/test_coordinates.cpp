@@ -13,43 +13,19 @@ EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(Eigen::Vector3d)
 
 
 /*----------------------------------------------------------------------
-    naming convention
+    NAME CONVENTION:  
     * expected_: the value it is expected to be. it is difenitly ture.
     * actual_: the calculated actual value. it could be false value.
+    * the word "gearprofile" stands for "y-coordinate" at the coordinate.
 -----------------------------------------------------------------------*/
 
 TEST(SolutionTest, TransformGearBase) {
-    /*
-    below is now not true information....
-
-    NAME CONVENTION:  
-    the word "gearprofile" stands for "y-coordinate" at the coordinate.
-
-    This code tests the following operations.
-    0. At siggear coordinate, define siggear_x which are array of siggear_x.
-       This array is "expected_arr_siggear_x".
-    1. At siggear coordinate, calculate gearprofile from "expected_arr_siggear_x"
-       This array is "expected_arr_siggear_yprofile".
-    2. Transfer "expected_arr_siggear_x" to sigbase coordinate.
-       This array is "actual_arr_sigbase_x".
-    3. At sigbase coordinate, calculate gearprofile from actual_arr_sigbase_x.
-       This array is "actual_arr_sigbase_yprofile".
-    4. Check ASSERT expected_siggear_x == actual_sigbase_x
-       This confirms transformation from siggear to sigbase.
-    5. Check ASSERT expected_arr_siggear_yprofile == actual_arr_sigbase_yprofile
-       This confirms the same transformation. (optional test)
-    6. Transfer "actual_arr_sigbase_yprofile" to siggear
-       This array is "actual_arr_siggear_yprofile".
-    7. Check ASSERT expected_arr_siggear_yprofile == actual_arr_sigbase_yprofile
-       This confirms inverse transformation.
-    */
 
     /* random test condition */
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_real_distribution<double> dis_radius(20., 30.);
-    std::uniform_real_distribution<double> \
-        dis_phi(-1. * M_PI / 2., M_PI / 2.);    // using theta isn't recommended
+    std::uniform_real_distribution<double> dis_radius(10., 50.);
+    std::uniform_real_distribution<double> dis_phi(-1. * M_PI / 2., M_PI / 2.);
     double radius = dis_radius(gen);
     const double phi = dis_phi(gen);
     const double N = 100.;  // the number of divisions on x-axis
@@ -92,7 +68,7 @@ TEST(SolutionTest, TransformGearBase) {
                 expected_arr_siggear_Pvecprofile[i],
                 actual_arr_sigbase_Pvecprofile[i],
                 radius,
-                phi
+                phi   // trans_Pvec_from_siggear_to_sigbase()'s default direction is CLOCKWISE
             );
 
         actual_arr_siggear_Pvecprofile[i] = \
@@ -103,7 +79,7 @@ TEST(SolutionTest, TransformGearBase) {
                 phi
             );
         /* test transformation both direction */
-        ASSERT_NEAR(expected_arr_siggear_Pvecprofile[i][0], actual_arr_siggear_Pvecprofile[i][0], 1e-6);    // error here 2024/11/21
+        ASSERT_NEAR(expected_arr_siggear_Pvecprofile[i][0], actual_arr_siggear_Pvecprofile[i][0], 1e-6);
     }
 
     /* Eigen usage test (not difinitly necessary) */
@@ -130,9 +106,7 @@ TEST(SolutionTest, TransformGearBase) {
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
 
-    // RUN_ALL_TESTS();
-
-    for (int i = 0; i < 1000; ++i) {
+    for (int i = 0; i < 5000; ++i) {
         RUN_ALL_TESTS();
     }
 

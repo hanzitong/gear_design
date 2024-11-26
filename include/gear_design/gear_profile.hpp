@@ -23,16 +23,14 @@ struct ConditionParam {
     }
 };
 
+
+
 /* Prototype Declaration */
 double quad_calc_siggear_yprofile_from_siggear_x(const double& siggear_x);
 // double real_calc_siggear_yprofile_from_sigger_x(const double& siggear_x);   // define it in future
 
-// NAME SUGGESTION: _obj_siggear_x_from_xbase
-double obj_calc_siggear_x_from_xbase(
-                                     const std::vector<double>& opt_vec,
-                                     std::vector<double>& grad,
-                                     void* f_data
-                                    );
+
+
 
 /* Implementation */
 // PREVIOUS NAME: siggear_f_gearprofile(const double& x)
@@ -71,36 +69,6 @@ double quad_calc_siggear_yprofile_from_siggear_x(const double& siggear_x)
         return std::nan("quad_gear invalid");
     }
 }
-
-
-// double _obj_calc_siggear_x_from_sigbase_x(
-//                                      const std::vector<double>& opt_vec,
-//                                      std::vector<double>& grad,
-//                                      void* f_data
-//                                     )
-// {
-//     /* cast parameters from input structs (nlopt manner) */
-//     gear_design::ConditionParam* params = static_cast<gear_design::ConditionParam*>(f_data);
-
-//     std::cout << "here !!!!!!!!!!!!!!" << std::endl;
-
-//     /* rename & cache */
-//     double radius = params -> radius;
-//     double phi = params -> phi;
-//     double cos = std::cos(phi);
-//     double sin = std::sin(phi);
-//     double x_base = params -> x_base;   // input
-//     double x_gear = opt_vec[0];         // variable to optimize
-//     double y_gear = quad_calc_siggear_yprofile_from_siggear_x(x_gear);
-//     // double y_gear = gear_design::siggear_f_gearprofile(x_gear);
-
-//     /* objective function for calculating x_gear */
-//     double res = x_base - x_gear * cos + y_gear * sin + radius * sin;   // equaton 1 in paper
-
-
-//     // return res;         // for using root finding algorithm
-//     return res * res;   // for using optimization algorithm
-// }
 
 
 }   // namespace gear_design
