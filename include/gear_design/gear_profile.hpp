@@ -4,7 +4,7 @@
 
 #include <vector>
 #include <nlopt.hpp>
-#include "gear_design/coordinates.hpp"  // Be careful of circular reference !!
+// #include "gear_design/coordinates.hpp"  // Be careful of circular reference !!
 
 
 namespace gear_design{
@@ -28,7 +28,6 @@ struct ConditionParam {
 /* Prototype Declaration */
 // double quad_calc_siggear_yprofile_from_siggear_x(const double& siggear_x);
 // double real_calc_siggear_yprofile_from_sigger_x(const double& siggear_x);   // define it in future
-
 
 
 
@@ -68,6 +67,9 @@ double quad_calc_siggear_yprofile_from_siggear_x(const double& siggear_x)
         return std::nan("quad_gear invalid");
     }
 }
+
+
+
 
 
 }   // namespace gear_design

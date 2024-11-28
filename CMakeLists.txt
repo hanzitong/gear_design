@@ -43,34 +43,34 @@ find_package(Eigen3 REQUIRED)
 
 ## ============== BUILD A TEST-CODE ==============
 
-add_executable(test_code 
-  # test/test_coordinates.cpp
-  test/test_coordinates_optimization.cpp
-)
-target_include_directories(test_code PRIVATE
-  ${PROJECT_SOURCE_DIR}/include
-  ${EIGEN3_INCLUDE_DIRS}
-  ${Boost_INCLUDE_DIRS}
-)
-target_link_libraries(test_code PRIVATE
-  gtest
-  pthread
-  nlopt
-)
+# add_executable(test_code 
+#   # test/test_coordinates.cpp
+#   test/test_coordinates_optimization.cpp
+# )
+# target_include_directories(test_code PRIVATE
+#   ${PROJECT_SOURCE_DIR}/include
+#   ${EIGEN3_INCLUDE_DIRS}
+#   ${Boost_INCLUDE_DIRS}
+# )
+# target_link_libraries(test_code PRIVATE
+#   gtest
+#   pthread
+#   nlopt
+# )
 
 
 ## ========== BUILD PLOT-DATUM-GENERATERS ==============
 
-# add_executable(gendata
-#   plot/objfunc_shape/src/gendata_objfunc_shape.cpp
-# )
-# target_include_directories(gendata PRIVATE
-#   ${PROJECT_SOURCE_DIR}/include
-#   ${EIGEN3_INCLUDE_DIRS}
-# )
-# target_link_libraries(gendata PRIVATE
-#   nlopt
-# )
+add_executable(gendata
+  plot/objfunc_shape/src/gendata_objfunc_shape.cpp
+)
+target_include_directories(gendata PRIVATE
+  ${PROJECT_SOURCE_DIR}/include
+  ${EIGEN3_INCLUDE_DIRS}
+)
+target_link_libraries(gendata PRIVATE
+  nlopt
+)
 
 
 ## ============== BUILD AS A LIBRARY ==============

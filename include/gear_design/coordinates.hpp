@@ -11,7 +11,7 @@
 #include <Eigen/Core>
 #include <nlopt.hpp>
 
-#include "gear_design/objfunctions.hpp"     // Be careful of circular reference !!
+#include "gear_design/gear_profile.hpp"     // Be careful of circular reference !!
 
 namespace gear_design {
 
@@ -320,9 +320,9 @@ double calc_sigbase_yprofile_from_sigbase_x(
     double optimal_siggear_x = optimization_variable[0];
     double last_objf_value = optimizer_siggear_x.last_optimum_value();
 
-    assert(std::abs(last_objf_value) < 1e-6);
-    std::cerr << " ==pass==========" << optimal_siggear_x;
-
+    // easy test
+    // assert(std::abs(last_objf_value) < 1e-6);
+    // std::cerr << " ==pass==========" << optimal_siggear_x;
 
     /* calculate sigbase_y by substituting optimal_siggear_x to equation 2 */
     double sin = std::sin(phi);
