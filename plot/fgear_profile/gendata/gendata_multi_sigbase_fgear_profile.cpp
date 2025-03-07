@@ -10,7 +10,7 @@
 
 
 bool printer(const int N, const double radius, const double theta_deg) {
-    /* condition setting */
+    /* set plot condition */
     const double theta = theta_deg / 180. * M_PI;
     const double siggear_x_range[2] = {-2., 2.};
     const double siggear_x_diff = (siggear_x_range[1] - siggear_x_range[0]) / N;
@@ -19,7 +19,7 @@ bool printer(const int N, const double radius, const double theta_deg) {
         siggear_x_parameter[i] = siggear_x_range[0] + siggear_x_diff * i;
     }
 
-    /* generate data */
+    /* generate data on the profile */
     std::vector<double> sigbase_x_output(N, 0.);
     std::vector<double> sigbase_y_output(N, 0.);
     for (int i = 0; i < N; ++i) {
@@ -36,6 +36,7 @@ bool printer(const int N, const double radius, const double theta_deg) {
     dataFile.open(ss.str());
 
     /* put data into file */
+    // dataFile << "# sigbase_x sigbase_y\n";
     for (int i = 0; i < N; ++i) {
         dataFile << sigbase_x_output[i] << ' ' << sigbase_y_output[i] << "\n";
     }

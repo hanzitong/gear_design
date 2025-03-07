@@ -8,10 +8,8 @@ set grid
 set size ratio 1
 set xrange [-50:50]
 
-
 plot \
     "data/data_objfunc.dat" with lines
-
 
 
 while (1) {
